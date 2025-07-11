@@ -1,55 +1,181 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap'); /* Added for text inputs/selects */
+
 
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: 'Montserrat', sans-serif;
+  color: #333;
+  background-color: #f0f2f5; /* Light background for the whole page */
 }
 
 .editor-container {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* ---------- LEFT TOOL PANEL ---------- */
 .tools-panel {
   display: flex;
   flex-direction: column;
-  width: 280px; /* increased from 160px */
-  min-width: 250px; /* prevent collapse */
-  background-color: #f5f5f5;
-  border-right: 1px solid #ccc;
+  width: 300px; /* Slightly wider for better spacing */
+  min-width: 280px;
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
   overflow: hidden;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
 }
 
 .top-toolbar {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
   flex-shrink: 0;
-  min-height: 600px;
+  min-height: 600px; /* Keep minimum height for consistent layout */
+}
+
+.top-toolbar h3 {
+  color: #261C91;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  font-weight: 700;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.section-divider {
+  border-top: 1px solid #eee;
+  margin: 20px 0;
+}
+
+.control-group {
+  margin-bottom: 15px;
+}
+
+.control-group label {
+  font-weight: 600;
+  font-size: 0.9em;
+  color: #444;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#zoomRange {
+  flex-grow: 1;
+  -webkit-appearance: none;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  outline: none;
+  opacity: 0.7;
+  transition: opacity .2s;
+}
+
+#zoomRange:hover {
+  opacity: 1;
+}
+
+#zoomRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #261C91;
+  cursor: grab;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+#zoomRange::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #261C91;
+  cursor: grab;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.custom-size-inputs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.custom-size-inputs input[type="number"] {
+  width: 80px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9em;
+}
+
+.apply-btn {
+  background-color: #28a745; /* Green for apply */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+}
+
+.apply-btn:hover {
+  background-color: #218838;
+}
+
+.chart-custom-controls {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed #eee;
 }
 
 .bottom-toolbar {
   flex-grow: 1;
-  padding: 10px;
+  padding: 15px 20px;
   overflow-y: auto;
-  background-color: #e0dede;
-  border-top: 1px solid #eee;
+  background-color: #f8f8f8;
+  border-top: 1px solid #e0e0e0;
+}
+
+.bottom-toolbar h4 {
+  color: #261C91;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  font-weight: 600;
 }
 
 /* ---------- CENTER CANVAS ---------- */
 .canvas-area {
   flex-grow: 1;
-  background-color: #6d6c6c;
+  background-color: #e2e6eb; /* Lighter, subtle background for canvas area */
   overflow: auto;
   position: relative;
+  display: flex; /* Use flexbox for centering */
+  justify-content: center;
+  align-items: center;
+  padding: 20px; /* Add some padding around the canvas */
 }
 
 .scroll-buffer {
-  min-width: 3000px;
-  min-height: 3000px;
+  min-width: 2500px; /* Adjusted slightly */
+  min-height: 2500px; /* Adjusted slightly */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -67,11 +193,13 @@ html, body {
 
 .canvas {
   background-color: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d0d0d0;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
   position: relative;
   width: 595px;
   height: 842px;
+  transform-origin: center center;
+  transition: all 0.3s ease-in-out; /* Smooth transition for resizing/zoom */
 }
 
 #dashboardCanvas {
@@ -80,10 +208,10 @@ html, body {
 
 /* ---------- RIGHT SIDEBAR ---------- */
 .sidebar-right {
-  width: 300px;
-  background-color: #fafafa;
-  padding: 15px;
-  box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+  width: 320px; /* Slightly wider */
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: -2px 0 8px rgba(0,0,0,0.03);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -92,69 +220,93 @@ html, body {
 
 .sidebar-right h3 {
   color: #261C91;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  font-weight: 700;
 }
 
 .sidebar-right label {
-  font-weight: 500;
-  font-size: 14px;
-  color: #261C91;
-  margin-bottom: 6px;
-  display: inline-block;
+  font-weight: 600;
+  font-size: 0.9em;
+  color: #444;
+  margin-bottom: 8px;
+  display: block;
 }
 
 #dashboardPrompt {
   width: 100%;
-  height: 150px;
-  resize: none;
+  height: 120px; /* Slightly shorter */
+  resize: vertical; /* Allow vertical resize */
   padding: 10px;
-  font-size: 14px;
+  font-size: 0.9em;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px; /* More rounded corners */
   background-color: #fff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Roboto', sans-serif;
   margin-bottom: 15px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .sidebar-right select,
-.sidebar-right button {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  padding: 8px 10px;
-  border-radius: 5px;
-  margin-top: 8px;
-}
-
-#chart-type, #db-select {
+.sidebar-right input[type="text"],
+.dashboard-name-input { /* Added input text for modal */
   width: 100%;
+  padding: 10px 12px;
   border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9em;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  appearance: none; /* Remove default select arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-5.4H18.6c-5%200-9.3%201.8-13.2%205.4A17.6%2017.6%200%200%200%200%2082.5c0%203.4%201.1%206.5%203.2%209.7l129.5%20129.5c1.2%201.2%202.6%202.1%204.3%202.9a17.4%2017.4%200%200%200%207.6%200c1.7-.8%203.1-1.7%204.3-2.9L289.8%2092.2c2.1-3.2%203.2-6.3%203.2-9.7z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px;
 }
 
-.sidebar-right button {
+.sidebar-right button.generate-btn,
+.modal-actions button {
   background-color: #261C91;
   color: white;
   border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 1.1em;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  margin-top: 20px;
 }
 
-.sidebar-right button:hover {
+.sidebar-right button.generate-btn:hover,
+.modal-actions button:hover {
   background-color: #1e1677;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
 
 /* ---------- WIDGET & CHART AREA ---------- */
 .chart-widget {
   position: absolute;
   z-index: 10;
-  cursor: move;
-  background: #fff;
-  transition: z-index 0.1s ease;
-  border: none;          /* ✨ This removes the border */
-  outline: none;         /* ✨ This prevents focus outlines */
+  cursor: grab; /* More indicative cursor */
+  background: #ffffff;
+  border-radius: 8px; /* Rounded widget corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); /* Soft shadow */
+  transition: all 0.2s ease;
+  overflow: hidden; /* Ensure content respects border-radius */
 }
 
 .chart-widget.active-widget {
   z-index: 100 !important;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Stronger shadow when active */
+  border: 2px solid #261C91; /* Highlight active widget */
 }
 
 .chart-widget::after {
@@ -162,19 +314,21 @@ html, body {
   position: absolute;
   right: 0;
   bottom: 0;
-  width: 12px;
-  height: 12px;
-  background: rgba(136, 136, 136, 0.6);
+  width: 16px; /* Larger resize handle */
+  height: 16px;
+  background: #261C91; /* Color the resize handle */
+  border-top-left-radius: 8px;
   cursor: se-resize;
-  opacity: 0;
+  opacity: 0.8; /* Always visible but slightly transparent */
   transition: opacity 0.2s;
+  box-shadow: -1px -1px 5px rgba(0,0,0,0.2);
 }
 
 .chart-widget:hover::after {
   opacity: 1;
 }
 
-/* ---------- UI CONTROLS ---------- */
+/* ---------- UI CONTROLS (Buttons) ---------- */
 .exit-editor-btn,
 .save-btn,
 .icon-btn {
@@ -184,36 +338,39 @@ html, body {
   background-color: #261C91;
   color: white;
   border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: 10px 15px; /* Slightly larger padding */
+  border-radius: 8px; /* More rounded */
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 5px;
+  font-size: 0.95em;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
   text-decoration: none;
+  gap: 5px; /* Space between icon and text */
+}
+
+.exit-editor-btn {
+  background-color: #e74c3c; /* Red for exit */
 }
 
 .exit-editor-btn:hover {
   background-color: #c0392b;
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .save-btn:hover,
 .icon-btn:hover {
   background-color: #1b1470;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* ---------- ZOOM & LABELS ---------- */
 #zoomValue {
-  font-size: 13px;
+  font-size: 0.9em;
   color: #555;
   margin-left: 6px;
-}
-
-label {
   font-weight: 500;
-  font-size: 14px;
-  color: #261C91;
 }
 
 /* ---------- MODAL ---------- */
@@ -226,91 +383,121 @@ label {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0,0,0,0.5); /* Darker overlay */
+  display: flex; /* Use flexbox for centering */
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-content {
   background-color: white;
-  margin: 10% auto;
-  padding: 30px;
-  border-radius: 8px;
-  width: 40%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 35px;
+  border-radius: 12px; /* More rounded modal */
+  width: 90%;
+  max-width: 500px; /* Max width for better responsiveness */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   position: relative;
+  text-align: center; /* Center content */
+}
+
+.modal-content h3 {
+  color: #261C91;
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 1.8em;
+  font-weight: 700;
 }
 
 .close {
   position: absolute;
-  top: 10px;
-  right: 20px;
-  font-size: 28px;
-  font-weight: bold;
+  top: 15px;
+  right: 25px;
+  font-size: 32px; /* Larger close button */
+  font-weight: normal; /* Normal weight for 'x' */
+  color: #888;
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.db-options {
+.close:hover {
+  color: #555;
+}
+
+.dashboard-name-input {
+  margin-bottom: 25px;
+}
+
+.modal-actions {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 15px;
   margin-top: 20px;
 }
 
-.db-option {
-  padding: 10px 15px;
+.modal-actions .confirm-btn {
   background-color: #261C91;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  flex: 1 1 40%;
 }
 
-.db-option:hover {
-  background-color: #1b1470;
+.modal-actions .cancel-btn {
+  background-color: #6c757d; /* Grey for cancel */
+}
+
+.modal-actions .cancel-btn:hover {
+  background-color: #5a6268;
 }
 
 /* ---------- NOTIFICATION ---------- */
 .notification {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 20px;
+  bottom: 25px;
+  right: 25px;
+  padding: 12px 25px;
   background-color: #4CAF50;
   color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  z-index: 1000;
-  animation: fadeIn 0.3s;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 10000; /* Ensure it's on top */
+  animation: fadeInOut 4s forwards; /* Added fade out */
+  font-weight: 500;
+  font-size: 0.95em;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(20px); }
 }
 
 /* ---------- WIDGET BUTTONS ---------- */
 .widget-btn {
-  display: block;
+  display: flex; /* Use flexbox for better alignment */
+  align-items: center;
   width: 100%;
-  margin: 5px 0;
-  padding: 6px 10px;
-  font-size: 13px;
-  background: #f3f3f3;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  margin: 8px 0;
+  padding: 10px 15px;
+  font-size: 0.9em;
+  background: #fdfdfd;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #261C91; /* Accent border */
+  border-radius: 6px;
   text-align: left;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  color: #333;
+  font-weight: 500;
 }
 
 .widget-btn:hover {
-  background-color: #e6e6e6;
+  background-color: #f0f0f0;
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* ---------- GUIDE LINES ---------- */
 .guide-line {
   position: absolute;
-  background-color: #261C91;
+  background-color: #1ABC9C; /* A more distinct guide line color */
   z-index: 1000;
   pointer-events: none;
 }
@@ -329,3 +516,34 @@ label {
   left: 0;
 }
 
+/* General Input/Select Styling */
+select, input[type="number"], input[type="text"], textarea {
+  padding: 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9em;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+select:focus,
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #261C91;
+  box-shadow: 0 0 0 3px rgba(38, 28, 145, 0.2);
+}
+
+/* Small adjustments for consistency */
+.top-toolbar select, .top-toolbar input[type="number"] {
+  width: 100%;
+  margin-top: 8px;
+}
+
+#chart-type, #db-select {
+  margin-top: 8px; /* Consistent margin */
+}
+
+.sidebar-right .control-group {
+  margin-bottom: 20px; /* More spacing for control groups */
+}
