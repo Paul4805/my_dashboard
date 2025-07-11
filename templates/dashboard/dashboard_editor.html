@@ -12,38 +12,48 @@
 
 <div class="editor-container">
   <input type="hidden" id="dashboardId" value="{{ dashboard_id or '' }}">
-  <!-- Tool Panel -->
   <div class="tools-panel">
     <div class="top-toolbar">
       <h3>Tools</h3>
-      <a href="/dashboard/bidashboard" class="exit-editor-btn">⏪</a>
-      <button class="save-btn">💾</button>
-      <div class="zoom-bar">
-        <label for="zoomRange">Zoom:</label><br>
-        <input type="range" id="zoomRange" min="50" max="200" value="100" />
-        <span id="zoomValue">100%</span>
-      </div>
-      <label for="canvas-size">Canvas Size:</label>
-      <select id="canvas-size">
-        <option value="a4">A4 (595x842 px)</option>
-        <option value="a3">A3 (842x1191 px)</option>
-        <option value="custom">Custom</option>
-      </select>
-
-      <!-- Inside tools-panel custom size apply -->
-      <div id="custom-size-inputs" style="display: none; margin-top: 8px;">
-        <input type="number" id="custom-width" placeholder="Width (px)" />
-        <input type="number" id="custom-height" placeholder="Height (px)" />
-        <button id="applyCustomSizeBtn">Apply</button>
+      <div class="toolbar-actions">
+        <a href="/dashboard/bidashboard" class="exit-editor-btn" title="Exit Editor">⏪ Exit</a>
+        <button class="save-btn" title="Save Dashboard">💾 Save</button>
       </div>
 
-      <div id="chartCustomControls" style="margin-top: 20px;"></div>
+      <div class="section-divider"></div>
+
+      <div class="control-group">
+        <label for="zoomRange">Zoom:</label>
+        <div class="zoom-controls">
+          <input type="range" id="zoomRange" min="50" max="200" value="100" />
+          <span id="zoomValue">100%</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="canvas-size">Canvas Size:</label>
+        <select id="canvas-size">
+          <option value="a4">A4 (595x842 px)</option>
+          <option value="a3">A3 (842x1191 px)</option>
+          <option value="custom">Custom</option>
+        </select>
+        <div id="custom-size-inputs" class="custom-size-inputs" style="display: none;">
+          <input type="number" id="custom-width" placeholder="Width (px)" aria-label="Custom width" />
+          <input type="number" id="custom-height" placeholder="Height (px)" aria-label="Custom height" />
+          <button id="applyCustomSizeBtn" class="apply-btn">Apply</button>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div id="chartCustomControls" class="chart-custom-controls"></div>
     </div>
 
-    <div class="bottom-toolbar" id="widgetListBar"></div>
+    <div class="bottom-toolbar" id="widgetListBar">
+      <h4>Widgets</h4>
+    </div>
   </div>
 
-  <!-- Canvas Area -->
   <div class="canvas-area" id="canvasArea">
     <div class="scroll-buffer">
       <div id="zoomWrapper">
@@ -53,49 +63,49 @@
     </div>
   </div>
 
-  <!-- AI Input Panel -->
   <div class="sidebar-right">
-    <h3>Describe your dashboard</h3>
-    <textarea id="dashboardPrompt" placeholder="e.g., Show monthly revenue comparison for 2024..."></textarea>
-    <div style="margin-top: 10px;">
-      <label for="chart-type">Select Chart Type:</label>
-      <br><br>
+    <h3>Design with AI</h3>
+    <div class="control-group">
+      <label for="dashboardPrompt">Describe your dashboard:</label>
+      <textarea id="dashboardPrompt" placeholder="e.g., Show monthly revenue comparison for 2024..." aria-label="Dashboard prompt"></textarea>
+    </div>
+
+    <div class="control-group">
+      <label for="chart-type">Select Chart Type (Optional):</label>
       <select id="chart-type">
-        <option value="">-- Select Chart Type (Optional) --</option>
+        <option value="">-- Select Chart Type --</option>
         <option value="line">Line Graph</option>
         <option value="bar">Bar Graph</option>
         <option value="pie">Pie Chart</option>
       </select>
     </div>
-    <br><br><br><br>
-    <label for="db-select">Select Data Source:</label>
-    <br><br>
-    <select id="db-select">
-      {% for db in db_list %}
-      <option value="{{ db }}">{{ db }}</option>
-      {% endfor %}
-    </select>
-    <!-- Inside sidebar-right generate dashboard button -->
-    <button id="generateDashboardBtn">Generate Dashboard</button>
 
+    <div class="control-group">
+      <label for="db-select">Select Data Source:</label>
+      <select id="db-select">
+        {% for db in db_list %}
+        <option value="{{ db }}">{{ db }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button id="generateDashboardBtn" class="generate-btn">Generate Dashboard</button>
   </div>
 </div>
 
-<!-- Save Modal -->
 <div id="saveDashboardModal" class="modal">
   <div class="modal-content">
-    <span class="close" id="closeSaveModal">&times;</span>
+    <span class="close" id="closeSaveModal" title="Close">&times;</span>
     <h3>Save Your Dashboard</h3>
-    <input type="text" id="dashboardNameInput" placeholder="Enter dashboard name..." style="width: 100%; margin-top: 15px; padding: 8px;" />
-    <div style="margin-top: 20px; text-align: right;">
-      <button id="confirmSaveBtn" class="db-option">💾 Save</button>
-      <button id="cancelSaveBtn" class="db-option" style="background-color: gray;">Cancel</button>
+    <input type="text" id="dashboardNameInput" placeholder="Enter dashboard name..." class="dashboard-name-input" />
+    <div class="modal-actions">
+      <button id="confirmSaveBtn" class="confirm-btn">💾 Save</button>
+      <button id="cancelSaveBtn" class="cancel-btn">Cancel</button>
     </div>
   </div>
 </div>
 
 {% block scripts %}
-  <!-- Load state.js first since other modules depend on it -->
   <script type="module" src="/static/js/dashboard/state.js"></script>
   <script type="module" src="/static/js/dashboard/core.js"></script>
   <script type="module" src="/static/js/dashboard/drag_resize.js"></script>
@@ -129,5 +139,3 @@
 
 </body>
 </html>
-
-
