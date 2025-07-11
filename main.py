@@ -24,9 +24,6 @@ from fastapi.responses import RedirectResponse
 from fastapi import Request
 from fastapi.middleware import Middleware
 from fastapi import HTTPException
-import jinja2
-
-from jinja2 import Environment
 from starlette.templating import Jinja2Templates
 from markupsafe import escape
 
