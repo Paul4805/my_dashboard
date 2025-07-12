@@ -5,24 +5,32 @@ const canvasArea = document.getElementById('canvasArea');
 
 zoomRange.addEventListener('input', () => {
   const zoom = zoomRange.value;
+  zoomWrapper.style.transformOrigin = 'top left';
   zoomWrapper.style.transform = `scale(${zoom / 100})`;
   zoomValueDisplay.textContent = `${zoom}%`;
 
   // Smooth scroll to center after zoom
   setTimeout(() => {
+    const scrollLeft = (zoomWrapper.offsetWidth * (zoom / 100) - canvasArea.clientWidth) / 2;
+    const scrollTop = (zoomWrapper.offsetHeight * (zoom / 100) - canvasArea.clientHeight) / 2;
     canvasArea.scrollTo({
-      top: (canvasArea.scrollHeight - canvasArea.clientHeight) / 2,
-      left: (canvasArea.scrollWidth - canvasArea.clientWidth) / 2,
+      top: scrollTop > 0 ? scrollTop : 0,
+      left: scrollLeft > 0 ? scrollLeft : 0,
       behavior: 'smooth'
     });
   }, 100);
 });
 
+document.getElementById('canvas-size').addEventListener('change', handleCanvasSizeChange);
+document.getElementById('applyCustomSizeBtn').addEventListener('click', applyCustomSize);
+
 window.addEventListener('DOMContentLoaded', () => {
   // Initial center scroll
+  const scrollLeft = (zoomWrapper.offsetWidth - canvasArea.clientWidth) / 2;
+  const scrollTop = (zoomWrapper.offsetHeight - canvasArea.clientHeight) / 2;
   canvasArea.scrollTo({
-    top: (canvasArea.scrollHeight - canvasArea.clientHeight) / 2,
-    left: (canvasArea.scrollWidth - canvasArea.clientWidth) / 2
+    top: scrollTop > 0 ? scrollTop : 0,
+    left: scrollLeft > 0 ? scrollLeft : 0
   });
 });
 

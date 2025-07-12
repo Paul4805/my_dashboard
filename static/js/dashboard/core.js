@@ -82,6 +82,9 @@ function applyCustomSize() {
       width: width,
       height: height
     }));
+    
+    // Trigger zoom recalculation
+    document.getElementById('zoomRange').dispatchEvent(new Event('input'));
   }
 }
 
@@ -105,6 +108,9 @@ function handleCanvasSizeChange() {
   } else if (size === 'custom') {
     customInputs.style.display = 'block';
   }
+  
+  // Trigger zoom recalculation
+  document.getElementById('zoomRange').dispatchEvent(new Event('input'));
 }
 
 
@@ -320,33 +326,34 @@ document.addEventListener('DOMContentLoaded', () => {
 //zoom
 
 
-const zoomRange = document.getElementById('zoomRange');
-const zoomValueDisplay = document.getElementById('zoomValue');
-const zoomWrapper = document.getElementById('zoomWrapper');
-const canvasArea = document.getElementById('canvasArea');
 
-zoomRange.addEventListener('input', () => {
-  const zoom = zoomRange.value;
-  zoomWrapper.style.transform = `scale(${zoom / 100})`;
-  zoomValueDisplay.textContent = `${zoom}%`;
+// const zoomRange = document.getElementById('zoomRange');
+// const zoomValueDisplay = document.getElementById('zoomValue');
+// const zoomWrapper = document.getElementById('zoomWrapper');
+// const canvasArea = document.getElementById('canvasArea');
 
-  // Smooth scroll to center after zoom
-  setTimeout(() => {
-    canvasArea.scrollTo({
-      top: (canvasArea.scrollHeight - canvasArea.clientHeight) / 2,
-      left: (canvasArea.scrollWidth - canvasArea.clientWidth) / 2,
-      behavior: 'smooth'
-    });
-  }, 100);
-});
+// zoomRange.addEventListener('input', () => {
+//   const zoom = zoomRange.value;
+//   zoomWrapper.style.transform = `scale(${zoom / 100})`;
+//   zoomValueDisplay.textContent = `${zoom}%`;
 
-window.addEventListener('DOMContentLoaded', () => {
-  // Initial center scroll
-  canvasArea.scrollTo({
-    top: (canvasArea.scrollHeight - canvasArea.clientHeight) / 2,
-    left: (canvasArea.scrollWidth - canvasArea.clientWidth) / 2
-  });
-});
+//   // Smooth scroll to center after zoom
+//   setTimeout(() => {
+//     canvasArea.scrollTo({
+//       top: (canvasArea.scrollHeight - canvasArea.clientHeight) / 2,
+//       left: (canvasArea.scrollWidth - canvasArea.clientWidth) / 2,
+//       behavior: 'smooth'
+//     });
+//   }, 100);
+// });
+
+// window.addEventListener('DOMContentLoaded', () => {
+//   // Initial center scroll
+//   canvasArea.scrollTo({
+//     top: (canvasArea.scrollHeight - canvasArea.clientHeight) / 2,
+//     left: (canvasArea.scrollWidth - canvasArea.clientWidth) / 2
+//   });
+// });
 
 window.generateDashboard = generateDashboard;
 window.restoreDashboardFromData = restoreDashboardFromData;
@@ -370,4 +377,20 @@ document.addEventListener('DOMContentLoaded', () => {
     canvasSizeSelect.addEventListener('change', handleCanvasSizeChange);
   }
 });
+
+
+// Should have initialization that calls setupZoom()
+document.addEventListener('DOMContentLoaded', () => {
+    setupZoom(); // This should be called to initialize zoom functionality
+});
+
+// Should handle canvas size changes that affect zoom
+function updateCanvasSize(width, height) {
+    const canvas = document.getElementById('dashboardCanvas');
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    
+    // Trigger zoom recalculation
+    document.getElementById('zoomRange').dispatchEvent(new Event('input'));
+}
 
