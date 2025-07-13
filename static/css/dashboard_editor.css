@@ -12,8 +12,7 @@ html, body {
 }
 
 .editor-container {
-  display: grid;
-  grid-template-columns: 300px 1fr 320px;
+  display: flex;
   height: 100vh;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -23,11 +22,11 @@ html, body {
 .tools-panel {
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 300px; /* Slightly wider for better spacing */
   min-width: 280px;
   background-color: #ffffff;
   border-right: 1px solid #e0e0e0;
-  overflow: auto;
+  overflow: hidden;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
 }
 
@@ -35,143 +34,7 @@ html, body {
   padding: 20px;
   border-bottom: 1px solid #e0e0e0;
   flex-shrink: 0;
-  min-height: auto; /* Changed from fixed height */
-}
-
-.bottom-toolbar {
-  flex-grow: 1;
-  padding: 10px 15px; /* Reduced from 15px 20px */
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: #f8f8f8;
-  border-top: 1px solid #e0e0e0;
-  width: 100%;
-  max-height: calc(100vh - 350px); /* Reduced height to show more widgets */
-}
-
-.widget-btn {
-  padding: 8px 12px; /* Reduced from 10px 15px */
-  margin: 6px 0; /* Reduced from 8px 0 */
-  font-size: 0.85em; /* Slightly smaller font */
-}
-
-.bottom-toolbar h4 {
-  margin-bottom: 8px; /* Reduced from 10px */
-  font-size: 1em; /* Slightly smaller heading */
-}
-
-.widget-btn {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-width: 250px; /* Ensure minimum width for widgets */
-  margin: 8px 0;
-  padding: 10px 15px;
-  font-size: 0.9em;
-  background: #fdfdfd;
-  border: 1px solid #e0e0e0;
-  border-left: 4px solid #261C91;
-  border-radius: 6px;
-  text-align: left;
-  cursor: pointer;
-  white-space: nowrap; /* Prevent text wrapping */
-  overflow: visible; /* Ensure content isn't clipped */
-}
-
-/* ---------- RIGHT SIDEBAR ---------- */
-.sidebar-right {
-  width: 320px;
-  background-color: #ffffff;
-  padding: 20px;
-  box-shadow: -2px 0 8px rgba(0,0,0,0.03);
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow-y: auto; /* Added scroll for content */
-  overflow-x: hidden; /* Add this to hide horizontal scrollbar */
-}
-
-.sidebar-right h3 {
-  color: #261C91;
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 1.5em;
-  font-weight: 700;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.control-group {
-  margin-bottom: 10px; /* Reduced margin */
-  padding: 8px 10px; /* Reduced padding */
-  background-color: #f9f9f9;
-  border-radius: 6px; /* Slightly smaller radius */
-  border: 1px solid #eee;
-  font-size: 0.85em; /* Smaller font size */
-  line-height: 1.2em; /* Tighter line height */
-}
-.control-group label {
-  font-weight: 600;
-  font-size: 0.85em; /* Smaller font size */
-  color: #444;
-  margin-bottom: 6px; /* Reduced margin */
-  display: block;
-}
-.control-group input,
-.control-group select,
-.control-group textarea {
-  font-size: 0.85em; /* Smaller font size */
-  padding: 6px 8px; /* Reduced padding */
-  border-radius: 5px;
-}
-
-.control-group label {
-  font-weight: 600;
-  font-size: 0.9em;
-  color: #444;
-  margin-bottom: 10px;
-  display: block;
-}
-
-/* Improved form elements */
-.sidebar-right select,
-.sidebar-right textarea,
-.sidebar-right input {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #fff;
-  font-family: 'Roboto', sans-serif;
-  font-size: 0.9em;
-  transition: all 0.3s ease;
-}
-
-.sidebar-right select:focus,
-.sidebar-right textarea:focus,
-.sidebar-right input:focus {
-  border-color: #261C91;
-  box-shadow: 0 0 0 3px rgba(38, 28, 145, 0.1);
-  outline: none;
-}
-
-.generate-btn {
-  margin-top: 20px;
-  padding: 12px;
-  font-weight: 600;
-  background-color: #261C91;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.generate-btn:hover {
-  background-color: #1e1677;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  min-height: 600px; /* Keep minimum height for consistent layout */
 }
 
 .top-toolbar h3 {
@@ -284,29 +147,10 @@ html, body {
 
 .bottom-toolbar {
   flex-grow: 1;
-  padding: 8px 12px; /* Reduced padding */
+  padding: 15px 20px;
   overflow-y: auto;
   background-color: #f8f8f8;
   border-top: 1px solid #e0e0e0;
-  max-height: calc(100vh - 250px); /* Increased max height to show more widgets */
-  box-sizing: border-box;
-}
-
-.bottom-toolbar h4 {
-  margin-bottom: 6px; /* Reduced margin */
-  font-size: 1em; /* Slightly smaller heading */
-  font-weight: 600;
-  color: #261C91;
-}
-
-.widget-btn {
-  padding: 6px 10px; /* Reduced padding */
-  margin: 4px 0; /* Reduced margin */
-  font-size: 0.8em; /* Smaller font size */
-  min-width: 220px; /* Slightly smaller min width */
-  white-space: normal; /* Allow text wrapping */
-  overflow: visible; /* Ensure content isn't clipped */
-  border-radius: 5px;
 }
 
 .bottom-toolbar h4 {
@@ -319,45 +163,43 @@ html, body {
 
 /* ---------- CENTER CANVAS ---------- */
 .canvas-area {
+  flex-grow: 1;
   background-color: #e2e6eb; /* Lighter, subtle background for canvas area */
-  overflow: auto; /* Changed back to auto for scrollbars */
+  overflow: auto;
   position: relative;
-  display: flex;
-  justify-content: flex-start; /* Changed to flex-start */
-  align-items: flex-start; /* Changed to flex-start */
-  padding: 20px;
-  scroll-padding-left: 300px;
+  display: flex; /* Use flexbox for centering */
+  justify-content: center;
+  align-items: center;
+  padding: 20px; /* Add some padding around the canvas */
 }
 
 .scroll-buffer {
-  min-width: calc(100% + 300px); /* Adjusted to account for zoom */
-  min-height: calc(100% + 300px); /* Adjusted to account for zoom */
+  min-width: 2500px; /* Adjusted slightly */
+  min-height: 2500px; /* Adjusted slightly */
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding: 50px;
-  overflow: visible; /* Changed to visible */
+  justify-content: center;
+  align-items: center;
 }
 
 #zoomWrapper {
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  transform-origin: 0 0;
+  justify-content: center;
+  align-items: center;
+  transform-origin: center center;
   transition: transform 0.2s ease;
   width: fit-content;
   height: fit-content;
-  margin: auto; /* Center the wrapper */
 }
 
 .canvas {
   background-color: white;
   border: 1px solid #d0d0d0;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
   position: relative;
-  /* Removed fixed width and height */
-  min-width: 100px; /* Minimum dimensions */
-  min-height: 100px;
+  width: 595px;
+  height: 842px;
+  transform-origin: center center;
+  transition: all 0.3s ease-in-out; /* Smooth transition for resizing/zoom */
 }
 
 #dashboardCanvas {
@@ -374,14 +216,6 @@ html, body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto; /* Prevent horizontal scrolling */
-  overflow-x: hidden; /* Add this to hide horizontal scrollbar */
-}
-
-/* Ensure all child elements don't exceed sidebar width */
-.sidebar-right > * {
-  max-width: 100%;
-  box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .sidebar-right h3 {
@@ -439,7 +273,7 @@ html, body {
   background-color: #261C91;
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 12px 20px;
   border-radius: 8px;
   cursor: pointer;
   font-size: 1.1em;
@@ -452,23 +286,6 @@ html, body {
 .sidebar-right button.generate-btn:hover,
 .modal-actions button:hover {
   background-color: #1e1677;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-.reset-btn {
-  background-color: #f39c12; /* Orange color for reset */
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95em;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.reset-btn:hover {
-  background-color: #e67e22;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
