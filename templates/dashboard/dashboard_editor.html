@@ -16,8 +16,9 @@
     <div class="top-toolbar">
       <h3>Tools</h3>
       <div class="toolbar-actions">
-        <a href="/dashboard/bidashboard" class="exit-editor-btn" title="Exit Editor">⏪ Exit</a>
-        <button class="save-btn" title="Save Dashboard">💾 Save</button>
+        <a href="/dashboard/bidashboard" class="exit-editor-btn" title="Exit Editor">Exit</a>
+        <button class="save-btn" title="Save Dashboard">Save</button>
+        <button id="resetCanvasBtn" class="reset-btn" title="Reset Canvas">Reset</button>
       </div>
 
       <div class="section-divider"></div>
@@ -25,8 +26,8 @@
       <div class="control-group">
         <label for="zoomRange">Zoom:</label>
         <div class="zoom-controls">
-          <input type="range" id="zoomRange" min="50" max="200" value="100" />
-          <span id="zoomValue">100%</span>
+          <input type="range" id="zoomRange" min="50" max="200" value="60" />
+          <span id="zoomValue">60%</span>
         </div>
       </div>
 
@@ -57,8 +58,7 @@
   <div class="canvas-area" id="canvasArea">
     <div class="scroll-buffer">
       <div id="zoomWrapper">
-        <div class="canvas" id="dashboardCanvas">
-        </div>
+        <div class="canvas" id="dashboardCanvas"></div>
       </div>
     </div>
   </div>
@@ -105,37 +105,32 @@
   </div>
 </div>
 
-{% block scripts %}
-  <script type="module" src="/static/js/dashboard/state.js"></script>
-  <script type="module" src="/static/js/dashboard/core.js"></script>
-  <script type="module" src="/static/js/dashboard/drag_resize.js"></script>
-  <script type="module" src="/static/js/dashboard/helper.js"></script>
-  <script type="module" src="/static/js/dashboard/render_chart.js"></script>
-  <script type="module" src="/static/js/dashboard/restore.js"></script>
-  <script type="module" src="/static/js/dashboard/save.js"></script>
-  <script type="module" src="/static/js/dashboard/widget_manager.js"></script>
+  {% block scripts %}
+    <script type="module" src="/static/js/dashboard/state.js"></script>
+    <script type="module" src="/static/js/dashboard/core.js"></script>
+    <script type="module" src="/static/js/dashboard/drag_resize.js"></script>
+    <script type="module" src="/static/js/dashboard/helper.js"></script>
+    <script type="module" src="/static/js/dashboard/render_chart.js"></script>
+    <script type="module" src="/static/js/dashboard/restore.js"></script>
+    <script type="module" src="/static/js/dashboard/save.js"></script>
+    <script type="module" src="/static/js/dashboard/widget_manager.js"></script>
+    <script type="module" src="/static/js/dashboard/zoom.js"></script>
+    <script type="module" src="/static/js/dashboard/reset.js"></script> 
+  {% endblock %}
 
-  <script type="module">
-    import { dashboardState } from '/static/js/dashboard/state.js';
-    
+  {% if dashboard_data %}
+  <script>
     document.addEventListener('DOMContentLoaded', () => {
-      {% if dashboard_data %}
-      // Initialize state
-      dashboardState.isInitialServerLoad = true;
-      
       // Clear any existing session data
       sessionStorage.removeItem('widgets');
       sessionStorage.removeItem('canvasSize');
-      
+
       // Restore from server data
-      restoreDashboardFromData({{ dashboard_data | tojson | safe }});
-      
-      // Update state after restoration
-      dashboardState.isInitialServerLoad = false;
-      {% endif %}
+      const dashboardData = JSON.parse('{{ dashboard_data | tojson | safe | escapejs }}');
+      restoreDashboardFromData(dashboardData);
     });
   </script>
-  {% endblock %}
+  {% endif %}
 
 </body>
 </html>
