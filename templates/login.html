@@ -125,14 +125,57 @@
     }
 
     /* Medium devices (tablets, 768px and up) */
+    @media (min-width: 320px) {
+      body {
+        padding: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      .login-box {
+        padding: 35px;
+        margin-top: 100px;
+      }
+
+      .eit-title{
+        position: absolute;
+        
+        top: 90px;
+      }
+    }
+
+    @media (min-width: 420px) {
+      body {
+        padding: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      .login-box {
+        padding: 35px;
+        margin-top: 100px;
+      }
+
+      .eit-title{
+        position: absolute;
+        
+        top: 90px;
+      }
+    }
     @media (min-width: 768px) {
       body {
         padding: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
       
       .login-box {
         padding: 35px;
       }
+       
     }
 
     /* Large devices (desktops, 992px and up) */
@@ -177,8 +220,8 @@
     {% endif %}
 <div style="color: black !important;">
     <form method="post">
-      <input type="text" name="username" placeholder="Username" required style="color: black !important; opacity: 0.9;" />
-      <input type="password" name="password" placeholder="Password" required style="color: black !important; opacity: 0.9;"/>
+      <input type="text" name="username" placeholder="Username" required style="color: black !important; opacity: 0.7;" />
+      <input type="password" name="password" placeholder="Password" required style="color: black !important; opacity: 0.7;"/>
       <button type="submit">Login</button>
       <p class="register-text">
         Don't have an account? <a href="/signup">Sign up</a>
