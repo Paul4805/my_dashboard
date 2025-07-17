@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - AI Analytics</title>
   <link rel="icon" href="https://aianalytics.ethicalintelligent.com/static/favicon.ico" type="image/x-icon">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -23,18 +24,31 @@
       min-height: 100vh;
       color: white;
       display: flex;
-      justify-content: flex-end;
-      padding-right: 10%;
+      flex-direction: column;
       align-items: center;
+      padding: 20px;
+    }
+
+    .eit-title {
+      color: #FFF2F2;
+      font-size: clamp(32px, 8vw, 64px);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 30px;
+      width: 100%;
+      line-height: 1.2;
     }
 
     .login-box {
       background-color: rgba(255, 255, 255, 0.95);
-      padding: 40px;
+      padding: clamp(25px, 5vw, 40px);
       border-radius: 10px;
-      width: 360px;
+      width: 100%;
+      max-width: 400px;
       box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
       color: #1a0b58;
+      margin: 0 auto;
     }
 
     .logo {
@@ -43,49 +57,52 @@
       justify-content: center;
       gap: 12px;
       font-weight: bold;
-      font-size: 24px;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px #00ccff, 0 0 20px #00ccff;
+      font-size: clamp(18px, 4vw, 20px);
+      margin-bottom: clamp(20px, 5vw, 30px);
+      opacity: 0.8;
     }
 
     .logo img {
-      width: 30px;
-      height: 30px;
-      filter: drop-shadow(0 0 6px #00ccff) drop-shadow(0 0 12px #00ccff);
+      width: clamp(36px, 8vw, 40px);
+      height: clamp(36px, 8vw, 40px);
+      opacity: 0.8;
     }
 
     input[type="text"],
     input[type="password"] {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0 20px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
+      padding: clamp(10px, 3vw, 12px);
+      margin: 10px 0 clamp(12px, 3vw, 15px);
+      border: 2px solid black;
+      opacity: 0.5;
+      border-radius: 2px;
+      font-size: clamp(14px, 3.5vw, 16px);
     }
 
     button {
-      width: 100%;
-      background-color: #00ccff;
+      width: clamp(180px, 60%, 220px);
+      display: block;
+      margin: 0 auto;
+      background-color: #006fb4;
       color: white;
-      padding: 12px;
+      padding: clamp(10px, 3vw, 12px);
       border: none;
       border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
-      font-size: 16px;
+      font-size: clamp(14px, 3.5vw, 16px);
       transition: background-color 0.3s, transform 0.3s;
     }
 
     button:hover {
-      background-color: #00aacc;
+      background-color: #006fb4;
       transform: scale(1.03);
     }
 
     .register-text {
       text-align: center;
-      margin-top: 20px;
-      font-size: 14px;
+      margin-top: clamp(15px, 4vw, 20px);
+      font-size: clamp(13px, 3.2vw, 14px);
     }
 
     .register-text a {
@@ -100,38 +117,80 @@
     .error {
       background-color: #fee2e2;
       color: #b91c1c;
-      padding: 10px;
+      padding: clamp(8px, 3vw, 10px);
       border-radius: 6px;
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 14px;
+      margin-bottom: clamp(15px, 4vw, 20px);
+      font-size: clamp(13px, 3.2vw, 14px);
+    }
+
+    /* Medium devices (tablets, 768px and up) */
+    @media (min-width: 768px) {
+      body {
+        padding: 40px;
+      }
+      
+      .login-box {
+        padding: 35px;
+      }
+    }
+
+    /* Large devices (desktops, 992px and up) */
+    @media (min-width: 992px) {
+      body {
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        padding-right: 10%;
+        padding-left: 10%;
+      }
+      
+      .eit-title {
+        position: absolute;
+        left: 40px;
+        top: 40px;
+        text-align: left;
+        width: auto;
+        margin-bottom: 0;
+      }
+      
+      .login-box {
+        margin-right: 0;
+      }
     }
   </style>
 </head>
+
 <body>
+  <div class="eit-title">
+    EIT<br>ANALYTICS
+  </div>
+
   <div class="login-box">
     <div class="logo">
-      <img src="https://img.icons8.com/ios-filled/50/1a0b58/artificial-intelligence.png" alt="AI Logo">
+      <img src="../static/images/AI_analytics-removebg-preview.png" alt="AI Logo">
       <span>AI ANALYTICS</span>
     </div>
 
     {% if error %}
-      <div class="error">{{ error }}</div>
+    <div class="error">{{ error }}</div>
     {% endif %}
-
+<div style="color: black !important;">
     <form method="post">
-      <input type="text" name="username" placeholder="Username" required />
-      <input type="password" name="password" placeholder="Password" required />
+      <input type="text" name="username" placeholder="Username" required style="color: black !important; opacity: 0.9;" />
+      <input type="password" name="password" placeholder="Password" required style="color: black !important; opacity: 0.9;"/>
       <button type="submit">Login</button>
       <p class="register-text">
         Don't have an account? <a href="/signup">Sign up</a>
       </p>
     </form>
+    </div>
   </div>
   <script>
-  // Clear client-side session storage on login page load
+    // Clear client-side session storage on login page load
     window.sessionStorage.clear();
     console.log("[DEBUG] sessionStorage cleared on login page load.");
   </script>
 </body>
+
 </html>

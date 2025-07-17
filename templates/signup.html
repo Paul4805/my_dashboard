@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Account | AI Analytics</title>
+  <title>Sign Up - AI Analytics</title>
   <link rel="icon" href="https://aianalytics.ethicalintelligent.com/static/favicon.ico" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -13,83 +14,92 @@
       box-sizing: border-box;
     }
 
-    html, body {
-      height: 100%;
+    body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1b2735);
-      background-size: 400% 400%;
-      animation: gradientBG 10s ease infinite;
-    }
-
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .wrapper {
-      height: 100vh;
+      background-image: url('../static/images/loginpageback.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: white;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      padding: 20px;
+    }
+
+    .eit-title {
+      color: #FFF2F2;
+      font-size: clamp(32px, 8vw, 64px);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      word-wrap: break-word;
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
     }
 
     .signup-box {
       background-color: rgba(255, 255, 255, 0.95);
-      padding: 40px;
+      padding: 25px;
       border-radius: 10px;
-      width: 420px;
+      width: 100%;
+      max-width: 420px;
       box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
       color: #1a0b58;
+      margin: 0 auto;
     }
 
     .logo {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 10px;
       font-weight: bold;
-      font-size: 24px;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px #00ccff, 0 0 20px #00ccff;
+      font-size: clamp(18px, 4vw, 20px);
+      margin-bottom: 15px;
+      opacity: 0.8;
     }
 
     .logo img {
-      width: 30px;
-      height: 30px;
-      filter: drop-shadow(0 0 6px #00ccff) drop-shadow(0 0 12px #00ccff);
+      width: clamp(30px, 6vw, 36px);
+      height: clamp(30px, 6vw, 36px);
+      opacity: 0.8;
     }
 
     h1 {
       text-align: center;
-      font-size: 22px;
-      margin-bottom: 8px;
+      font-size: clamp(18px, 4vw, 20px);
+      margin-bottom: 6px;
     }
 
     .subtitle {
       text-align: center;
-      font-size: 14px;
+      font-size: clamp(12px, 3vw, 13px);
       color: #555;
-      margin-bottom: 24px;
+      margin-bottom: 15px;
     }
 
     .input-group {
-      margin-bottom: 16px;
+      margin-bottom: 8px;
     }
 
     .input-group label {
       display: block;
-      font-size: 14px;
-      margin-bottom: 6px;
+      font-size: clamp(12px, 3vw, 13px);
+      margin-bottom: 3px;
       font-weight: 500;
     }
 
     .input-group input {
       width: 100%;
-      padding: 10px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      padding: 10px 12px;
+      margin: 4px 0 8px;
+      border: 2px solid black;
+      opacity: 0.5;
+      border-radius: 2px;
+      font-size: clamp(13px, 3vw, 14px);
     }
 
     .name-fields {
@@ -102,34 +112,38 @@
     }
 
     .password-hint {
-      font-size: 12px;
+      font-size: clamp(11px, 2.8vw, 12px);
       color: #6b7280;
-      margin-top: 4px;
+      margin-top: -6px;
+      margin-bottom: 8px;
+      line-height: 1.3;
     }
 
     button {
       width: 100%;
-      background-color: #00ccff;
+      max-width: 220px;
+      display: block;
+      margin: 20px auto 0;
+      background-color:  #006fb4;
       color: white;
       padding: 12px;
       border: none;
       border-radius: 6px;
       font-weight: 600;
-      font-size: 16px;
       cursor: pointer;
+      font-size: clamp(14px, 3.5vw, 15px);
       transition: background-color 0.3s, transform 0.3s;
-      margin-top: 10px;
     }
 
     button:hover {
-      background-color: #00aacc;
+      background-color:  #006fb4;
       transform: scale(1.03);
     }
 
     .footer-text {
       text-align: center;
-      margin-top: 16px;
-      font-size: 14px;
+      margin-top: 20px;
+      font-size: clamp(13px, 3.2vw, 14px);
     }
 
     .footer-text a {
@@ -147,66 +161,150 @@
       padding: 10px;
       border-radius: 6px;
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 14px;
+      margin-bottom: 15px;
+      font-size: clamp(13px, 3.2vw, 14px);
+    }
+
+    /* Medium devices (tablets, 481px to 900px) */
+    @media (min-width: 481px) and (max-width: 900px) {
+      body {
+        padding: 40px;
+        justify-content: center;
+      }
+
+      .signup-box {
+        padding: 30px;
+        max-width: 380px;
+      }
+
+      .eit-title {
+        margin-bottom: 30px;
+        font-size: clamp(40px, 8vw, 56px);
+      }
+
+      .input-group input {
+        padding: 12px 14px;
+      }
+
+      button {
+        padding: 14px;
+        max-width: 240px;
+      }
+    }
+
+    /* Small devices (phones, 480px and below) */
+    @media (max-width: 480px) {
+      body {
+        padding: 20px;
+      }
+
+      .signup-box {
+        padding: 20px;
+      }
+
+      .name-fields {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      button {
+        width: 100%;
+        max-width: 200px;
+        padding: 12px;
+      }
+    }
+
+    /* Large devices (desktops, 901px and up) */
+    @media (min-width: 901px) {
+      body {
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        padding-right: 10%;
+      }
+
+      .eit-title {
+        position: absolute;
+        left: 40px;
+        top: 40px;
+        text-align: left;
+        width: auto;
+        margin-bottom: 0;
+      }
+
+      .signup-box {
+        margin-right: 0;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="wrapper">
-    <div class="signup-box">
-      <div class="logo">
-        <img src="https://img.icons8.com/ios-filled/50/1a0b58/artificial-intelligence.png" alt="AI Icon" />
-        <span>AI ANALYTICS</span>
+  <!-- <div class="eit-title">
+    EIT<br>ANALYTICS
+  </div> -->
+  <div
+  style="width: 525px; height: 136px; left: 25px; top: 5px; position: absolute; color: #FFF2F2; font-size: 64px; font-family: 'Montserrat',sans-serif; font-weight: 700; word-wrap: break-word">
+    EIT<br>ANALYTICS</div>
+
+  <div class="signup-box">
+    <div class="logo">
+      <img src="../static/images/AI_analytics-removebg-preview.png" alt="AI Logo">
+      <span>AI ANALYTICS</span>
+    </div>
+
+    <h1>Create your account</h1>
+    <p class="subtitle">Join our community today</p>
+
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post">
+      <div class="name-fields">
+        <div class="input-group">
+          <label for="first_name">First Name</label>
+          <input type="text" id="first_name" name="first_name" required />
+        </div>
+        <div class="input-group">
+          <label for="last_name">Last Name</label>
+          <input type="text" id="last_name" name="last_name" required />
+        </div>
       </div>
 
-      <h1>Create your account</h1>
-      <p class="subtitle">Join our community today</p>
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+      </div>
 
-      {% if error %}
-        <div class="error">{{ error }}</div>
-      {% endif %}
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required />
+      </div>
 
-      <form method="post">
-        <div class="name-fields">
-          <div class="input-group">
-            <label for="first_name">First Name</label>
-            <input type="text" id="first_name" name="first_name" required />
-          </div>
-          <div class="input-group">
-            <label for="last_name">Last Name</label>
-            <input type="text" id="last_name" name="last_name" required />
-          </div>
-        </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
+        <p class="password-hint">Use 8+ characters with letters, numbers & symbols</p>
+      </div>
 
-        <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" required />
-        </div>
+      <div class="input-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" required />
+      </div>
 
-        <div class="input-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" required />
-        </div>
+      <button type="submit">Create Account</button>
+    </form>
 
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required />
-          <p class="password-hint">Use 8 or more characters with a mix of letters, numbers & symbols</p>
-        </div>
-
-        <div class="input-group">
-          <label for="confirm_password">Confirm Password</label>
-          <input type="password" id="confirm_password" name="confirm_password" required />
-        </div>
-
-        <button type="submit">Create Account</button>
-      </form>
-
-      <p class="footer-text">
-        Already have an account? <a href="/login">Sign in</a>
-      </p>
-    </div>
+    <p class="footer-text">
+      Already have an account? <a href="/login">Sign in</a>
+    </p>
   </div>
+  <script>
+    // Clear client-side session storage on signup page load
+    window.sessionStorage.clear();
+    console.log("[DEBUG] sessionStorage cleared on signup page load.");
+  </script>
 </body>
+
 </html>
