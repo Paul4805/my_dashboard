@@ -28,7 +28,7 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 def generate_sql_from_prompt(user_prompt, schema_description, database_type):
-    print(database_type)
+    
     """
     Converts natural language questions to raw SQL queries using LLM via RunPod.
 
@@ -160,7 +160,7 @@ Please use chart labels in the language of the user prompt.
     try:
         return json.loads(cleaned)
     except json.JSONDecodeError as e:
-        print("[ERROR] Failed to parse JSON from model response:", e)
+       
         return {}
     
 
@@ -175,7 +175,7 @@ def generate_forecast_config(user_prompt, forecast_result, period, chart_type="l
         ]
     }
     """
-    print(f"Generating forecast config for prompt: {user_prompt}")
+   
     x_axis_data = []
     combined_data = []
 
@@ -337,7 +337,7 @@ def askai(user_message: str) -> str:
         return response.choices[0].message.content.strip()
 
     except Exception as e:
-        print("[AI ERROR]", e)
+        
         return "Sorry, I'm currently unable to respond."
     
 

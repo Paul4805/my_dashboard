@@ -37,7 +37,7 @@ def login_user(
     db: Session = Depends(get_db)
 ):
     user = db.query(User).filter(User.username == username).first()
-    print(db.bind.url)
+   
 
     if not user or not verify_password(password, user.hashed_password):
         return templates.TemplateResponse("login.html", {

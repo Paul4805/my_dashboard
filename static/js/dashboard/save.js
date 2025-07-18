@@ -20,12 +20,10 @@ export function saveDashboardState() {
       config: config
     });
 
-    console.log(`✅ Saved config for widget ${widget.dataset.widgetId}:`, config);
   });
 
   // Save widget data to sessionStorage
   sessionStorage.setItem('widgets', JSON.stringify(widgets));
-  console.log('📦 Dashboard state saved to sessionStorage:', sessionStorage.getItem('widgets'));
 
   // Save canvas size to sessionStorage
   const canvas = document.getElementById('dashboardCanvas');
@@ -42,7 +40,6 @@ export function saveDashboardState() {
   }
 
   sessionStorage.setItem('canvasSize', JSON.stringify(canvasSize));
-  console.log('📐 Canvas size saved to sessionStorage:', canvasSize);
 }
 
 
@@ -164,7 +161,7 @@ export function initDashboardSaveSystem() {
     const data = await response.json();
     alert('Dashboard saved successfully!');
     closeModal();
-    console.log('Dashboard saved:', data.dashboard_id);
+    
     
     // Generate thumbnail after a slight delay to allow UI to update
     setTimeout(() => {
@@ -177,7 +174,7 @@ export function initDashboardSaveSystem() {
    * @param {Error} error - The error that occurred
    */
   function handleSaveError(error) {
-    console.error('Save error:', error);
+   
     alert(`Error saving dashboard: ${error.message}`);
   }
 }
@@ -209,7 +206,7 @@ async function updateDashboard(dashboardId) {
     alert('✅ Dashboard updated!');
     generateAndSendThumbnail(dashboardId);
   } catch (error) {
-    console.error('Update failed:', error);
+   
     alert('⚠️ Error updating dashboard. Please try again.');
   }
 }
@@ -254,7 +251,7 @@ export function getFullChartConfig(chart) {
     }];
   }
 
-  console.log(`✅ Extracted config for ${chart.config?.type} chart:`, config);
+
   return config;
 }
 

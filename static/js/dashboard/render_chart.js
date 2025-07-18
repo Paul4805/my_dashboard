@@ -5,7 +5,7 @@ import { addWidgetButton } from './widget_manager.js';
 // Main Chart.js rendering function
 export function renderChartToCanvas(chartData, chartType = 'bar', shouldSave = true) {
   if (typeof Chart === 'undefined') {
-    console.error('Chart.js is not loaded!');
+    
     return;
   }
 
@@ -89,7 +89,7 @@ export function renderChartToCanvas(chartData, chartType = 'bar', shouldSave = t
   // ✅ Only save if shouldSave is true
   if (shouldSave) {
     const fullConfig = getFullChartConfig(chart);
-    console.log('📦 Saving chart to sessionStorage with config:', fullConfig);
+   
     const saved = JSON.parse(sessionStorage.getItem('widgets') || '[]');
     saved.push({
       id: widgetId,
@@ -101,7 +101,7 @@ export function renderChartToCanvas(chartData, chartType = 'bar', shouldSave = t
       top: chartContainer.style.top || '20px'
     });
     sessionStorage.setItem('widgets', JSON.stringify(saved));
-    console.log('📦 Dashboard state saved to sessionStorage:', sessionStorage.getItem('widgets'));
+   
   }
 
 

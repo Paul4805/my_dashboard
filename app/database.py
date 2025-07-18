@@ -9,7 +9,7 @@ load_dotenv(find_dotenv())
 
 # Example: postgresql://username:password@localhost:5432/dbname
 DATABASE_URL = os.getenv("DATABASE_URL")
-print(f"Loaded DATABASE_URL: {DATABASE_URL}")
+
 engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

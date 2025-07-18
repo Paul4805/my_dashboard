@@ -46,7 +46,7 @@ export function showNotification(message) {
 export function clearDashboardSession() {
   sessionStorage.removeItem('widgets');
   sessionStorage.removeItem('canvasSize');
-  console.log('🧹 Dashboard session storage cleared');
+  
 }
 
 export function generateAndSendThumbnail(dashboardId) {

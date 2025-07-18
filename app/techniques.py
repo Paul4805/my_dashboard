@@ -37,12 +37,12 @@ def run_forecasting(data, user_prompt,period):
 
         chart_data = combined_data.to_dict(orient='records')
 
-        #print(f"✅ [DEBUG] Forecasting successful: {(chart_data)} records generated")
+        
         return chart_data
     
     
     except Exception as e:
-        print(f"❌ [ERROR] Forecasting failed: {e}")
+       
         return {
             "error": "Forecasting failed",
             "details": str(e)

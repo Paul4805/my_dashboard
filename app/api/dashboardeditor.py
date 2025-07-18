@@ -60,13 +60,13 @@ async def dashboard_editor(
 async def update_dashboard(dashboard_id: int, request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         data = await request.json()
-        print(f"📥 Received update for dashboard ID {dashboard_id}: {data}")
+       
 
         widgets = data.get("widgets")
         canvas_size = data.get("canvasSize")
 
         if widgets is None or canvas_size is None:
-            print("⚠️ Missing widgets or canvasSize in payload.")
+          
             return {"error": "widgets and canvasSize are required."}
 
         # Fetch dashboard
@@ -76,7 +76,7 @@ async def update_dashboard(dashboard_id: int, request: Request, db: Session = De
         ).first()
 
         if not dashboard:
-            print(f"❌ Dashboard with ID {dashboard_id} not found or unauthorized.")
+           
             return {"error": "Dashboard not found."}
 
         # Update data
@@ -86,11 +86,11 @@ async def update_dashboard(dashboard_id: int, request: Request, db: Session = De
         }
 
         db.commit()
-        print(f"✅ Dashboard ID {dashboard_id} updated successfully.")
+       
         return {"message": "Dashboard updated successfully."}
 
     except Exception as e:
-        print(f"💥 Error updating dashboard ID {dashboard_id}: {e}")
+        
         return {"error": "An error occurred while updating the dashboard."}
 
 

@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
       aiMsgEl.textContent = data.response || "No response";
     } catch (error) {
       aiMsgEl.textContent = "Sorry, something went wrong.";
-      console.error("AI error:", error);
+      
     }
 
     messageBox.scrollTop = messageBox.scrollHeight;
@@ -90,7 +90,7 @@ async function deleteDashboard(dashboardId) {
         alert("Error: " + data.detail);
       }
     } catch (error) {
-      console.error("Error deleting dashboard:", error);
+     
       alert("Something went wrong!");
     }
 }

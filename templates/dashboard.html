@@ -181,7 +181,7 @@
         const LANG_FILE_PATH = "/static/langs.json";
 
         function applyTranslations(lang, translations) {
-            console.log(`[i18n] Applying translations for: ${lang}`);
+           
 
             // Translate text content
             document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -192,10 +192,10 @@
                         el.innerHTML = value
                             .replace(/</g, "&lt;")
                             .replace(/&lt;br\s*\/?&gt;/gi, "<br>");
-                        console.log(`[i18n] Set inner HTML: ${key} -> ${value}`);
+                        
                     } else {
                         el.textContent = value;
-                        console.log(`[i18n] Set inner text: ${key} -> ${value}`);
+                        
                     }
                 } else {
                     console.warn(`[i18n] ⚠️ Missing translation for key: "${key}" in lang: "${lang}"`);
@@ -209,7 +209,7 @@
                 const value = translations[key]?.[lang];
                 if (value) {
                     el.title = value;
-                    console.log(`[i18n] Set title: ${key} -> ${value}`);
+                   
                 } else {
                     console.warn(`[i18n] ⚠️ Missing title translation for key: "${key}" in lang: "${lang}"`);
                 }
@@ -221,7 +221,7 @@
                 const value = translations[key]?.[lang];
                 if (value) {
                     el.placeholder = value;
-                    console.log(`[i18n] Set placeholder: ${key} -> ${value}`);
+                   
                 } else {
                     console.warn(`[i18n] ⚠️ Missing placeholder translation for key: "${key}" in lang: "${lang}"`);
                 }
@@ -234,7 +234,7 @@
                 const value = translations[key]?.[lang];
                 if (value) {
                     titleEl.textContent = value;
-                    console.log(`[i18n] Set <title>: ${key} -> ${value}`);
+                   
                 } else {
                     console.warn(`[i18n] ⚠️ Missing title translation for key: "${key}" in lang: "${lang}"`);
                 }
@@ -243,11 +243,11 @@
             // Set direction (RTL or LTR)
             const direction = (lang === 'ar' || lang === 'fa') ? 'rtl' : 'ltr';
             document.documentElement.dir = direction;
-            console.log(`[i18n] Document direction set to: ${direction}`);
+            
         }
 
         function loadLanguage(lang) {
-            console.log(`[i18n] Loading language file from: ${LANG_FILE_PATH}`);
+         
 
             fetch(LANG_FILE_PATH)
                 .then(res => {
@@ -257,7 +257,7 @@
                     return res.json();
                 })
                 .then(data => {
-                    console.log("[i18n] Language file loaded:", data);
+                   
                     localStorage.setItem("lang", lang);
                     applyTranslations(lang, data);
                 })
@@ -270,13 +270,12 @@
             const savedLang = localStorage.getItem("lang") || "en";
             const selector = document.getElementById("language-select");
 
-            console.log(`[i18n] Initial language: ${savedLang}`);
+          
 
             if (selector) {
                 selector.value = savedLang;
                 selector.addEventListener("change", (e) => {
                     const selectedLang = e.target.value;
-                    console.log(`[i18n] Language changed to: ${selectedLang}`);
                     loadLanguage(selectedLang);
                 });
             } else {

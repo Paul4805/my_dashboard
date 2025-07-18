@@ -108,7 +108,7 @@ function deleteCurrentWidget() {
   const widgetId = container.dataset.targetId;
   
   if (!widgetId) {
-    console.error('No widget ID found for deletion');
+    
     return;
   }
 
