@@ -205,14 +205,13 @@
 </script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     const savedLang = localStorage.getItem('language') || 'en';
     document.getElementById('languageSelect').value = savedLang;
-    loadLanguage(savedLang).then(() => {
-      // Trigger the fade-in after i18n finishes
-      document.body.style.opacity = '1';
-    });
+    await loadLanguage(savedLang);
+    document.body.style.opacity = '1';
   });
+
 </script>
 {% endblock %}
 

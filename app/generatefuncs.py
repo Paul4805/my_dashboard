@@ -9,7 +9,6 @@ import json
 from decimal import Decimal
 from datetime import date, datetime
 import json
-import re
 
 
 load_dotenv()  # Load from .env
@@ -58,6 +57,7 @@ given the schema and user question.
 - Do not make up columns or tables not present in the schema.
 - If filters, conditions, or joins are needed, infer them from the schema and question.
 - Use aliases or aggregations where relevant.
+- Incase of in a need a lot of data give sql query consisting of only 70 records
 
 ### QUESTION ###
 {user_prompt}
@@ -86,7 +86,7 @@ def generate_echarts_config(user_prompt, results, chart_type):
     Args:
         user_prompt: The visualization request
         results: Data to visualize
-        chart_type: Chart type ('pie', 'bar', 'line', etc.)
+        chart_type: Chart type ('pie', 'bar', 'line', 'scatter', 'radar', 'gauge')
         
     Returns:
         dict: Valid ECharts configuration JSON
@@ -95,53 +95,101 @@ def generate_echarts_config(user_prompt, results, chart_type):
 
     # Templates
     bar_chart_template = {
-            "title": "Top 5 Products Sold",
-            "xAxisData": ["Product A", "Product B", "Product C", "Product D", "Product E"],
-            "seriesData": [
-                {"name": "Total Sold", "type": "bar", "data": [14, 13, 12, 11, 10]}
-            ]
-        }
-    line_chart_template = {
-            "title": "Monthly Sales Trend",
-            "xAxisData": ["Jan", "Feb", "Mar", "Apr"],
-            "seriesData": [
-                {"name": "Total Sales", "type": "line", "data": [12, 19, 8, 15]}
-            ]
-        }
-    pie_chart_template = {
-            "title": "Product Distribution",
-            "seriesData": [
-                {"name": "Product A", "value": 35},
-                {"name": "Product B", "value": 25},
-                {"name": "Product C", "value": 40}
-            ]
-        }
+        "title": "Top 5 Products Sold",
+        "xAxisData": ["Product A", "Product B", "Product C", "Product D", "Product E"],
+        "seriesData": [
+            {"name": "Total Sold", "type": "bar", "data": [14, 13, 12, 11, 10]}
+        ]
+    }
 
-    # Choose template
-    if chart_type == "line":
-        template = line_chart_template
-    elif chart_type == "pie":
-        template = pie_chart_template
-    else:
-        template = bar_chart_template
+    line_chart_template = {
+        "title": "Monthly Sales Trend",
+        "xAxisData": ["Jan", "Feb", "Mar", "Apr"],
+        "seriesData": [
+            {"name": "Total Sales", "type": "line", "data": [12, 19, 8, 15]}
+        ]
+    }
+
+    pie_chart_template = {
+        "title": "Product Distribution",
+        "seriesData": [
+            {"name": "Product A", "value": 35},
+            {"name": "Product B", "value": 25},
+            {"name": "Product C", "value": 40}
+        ]
+    }
+
+    scatter_chart_template = {
+        "title": "Height vs Weight",
+        "xAxisData": [],  # Normally left empty for scatter
+        "seriesData": [
+            {"name": "Measurements", "type": "scatter", "data": [[160, 60], [170, 70], [180, 80]]}
+        ]
+    }
+
+    radar_chart_template = {
+        "title": "Skill Comparison",
+        "indicator": [
+            {"name": "Design", "max": 100},
+            {"name": "Coding", "max": 100},
+            {"name": "Testing", "max": 100},
+            {"name": "Communication", "max": 100}
+        ],
+        "seriesData": [
+            {
+                "name": "Employee A",
+                "type": "radar",
+                "data": [90, 80, 85, 75]
+            }
+        ]
+    }
+
+    doughnut_chart_template = {
+        "title": "Budget Allocation",
+        "seriesData": [
+            {"name": "Marketing", "value": 30},
+            {"name": "Development", "value": 40},
+            {"name": "Operations", "value": 20},
+            {"name": "Support", "value": 10}
+        ]
+    }
+
+
+    # Template selector
+    templates = {
+        "bar": bar_chart_template,
+        "line": line_chart_template,
+        "pie": pie_chart_template,
+        "scatter": scatter_chart_template,
+        "radar": radar_chart_template,
+        "doughnut": doughnut_chart_template
+    }
+
+    template = templates.get(chart_type, bar_chart_template)
 
     prompt = f"""
-You are a chart generation assistant.
+You are a chart generation assistant building JSON configs for Chart.js.
+
 Question: {user_prompt}
 Chart type: {chart_type}
-Data: {results}
+Raw Data: {results}
 
-Use this JSON template:
+Use this JSON template as a base:
 {template}
 
 Instructions:
-1. Fill in the template with the provided data
-2. Return ONLY valid JSON
-3. No explanations or additional text
-4. Include appropriate colors if the template has color fields
-5. Make labels descriptive
+1. Fill in the template using the provided data.
+2. Ensure radar chart data is a flat list of numbers like: "data": [80, 60, 90, 70]
+   ⚠️ Do NOT nest inside another list (no [[...]]), only use [...].
+3. For pie/doughnut charts: use a list of objects like {{ name, value }}.
+4. For bar/line charts: xAxisData is an array of labels, and seriesData.data is a flat list.
+5. Return ONLY valid JSON — no markdown, no explanation.
+6. Match chart labels to the language of the user prompt.
+7. Use descriptive and clear labels and titles.
+8. If color fields exist, include distinct colors per category.
+9. Ensure Chart.js compatibility.
 
-Please use chart labels in the language of the user prompt.
+Return ONLY valid JSON below:
 """
 
     response = client.chat.completions.create(
@@ -153,8 +201,6 @@ Please use chart labels in the language of the user prompt.
     )
 
     content = response.choices[0].message.content.strip()
-
-    # Clean triple backtick-wrapped JSON
     cleaned = re.sub(r"^```json\s*|\s*```$", "", content.strip(), flags=re.IGNORECASE)
 
     try:
@@ -162,7 +208,7 @@ Please use chart labels in the language of the user prompt.
     except json.JSONDecodeError as e:
         print("[ERROR] Failed to parse JSON from model response:", e)
         return {}
-    
+
 
 def generate_forecast_config(user_prompt, forecast_result, period, chart_type="line"):
     """

@@ -34,16 +34,43 @@ def clean_sql(raw_sql: str, as_single_line: bool = False) -> str:
     return cleaned_sql
 
 
+import re
+
+# Better version using non-capturing groups with word boundaries
 def detect_chart_type(prompt: str) -> str:
     prompt = prompt.lower()
-    if re.search(r"\bline\b|\btrend\b|\bover time\b", prompt):
+    
+    # First check for explicit chart type requests
+    if re.search(r"\b(?:use|show|create|display|generate|draw)\s+(?:a|an|the)?\s*(radar|spider)\s*chart\b", prompt):
+        return "radar"
+    if re.search(r"\b(?:use|show|create|display|generate|draw)\s+(?:a|an|the)?\s*(line)\s*chart\b", prompt):
         return "line"
-    elif re.search(r"\bbar\b|\bcompare\b", prompt):
+    if re.search(r"\b(?:use|show|create|display|generate|draw)\s+(?:a|an|the)?\s*(bar)\s*chart\b", prompt):
         return "bar"
-    elif re.search(r"\bpies?\b|\bdistribution\b|\bpercentage\b", prompt):
+    if re.search(r"\b(?:use|show|create|display|generate|draw)\s+(?:a|an|the)?\s*(pie)\s*chart\b", prompt):
         return "pie"
+    if re.search(r"\b(?:use|show|create|display|generate|draw)\s+(?:a|an|the)?\s*(scatter)\s*chart\b", prompt):
+        return "scatter"
+    if re.search(r"\b(?:use|show|create|display|generate|draw)\s+(?:a|an|the)?\s*(doughnut|donut)\s*chart\b", prompt):
+        return "doughnut"
+    
+    # Then check for conceptual matches
+    if re.search(r"\b(?:line|trend|over time|growth)\b", prompt):
+        return "line"
+    elif re.search(r"\b(?:bar|compare|comparison|rank|ranking)\b", prompt):
+        return "bar"
+    elif re.search(r"\b(?:pie|distribution|percentage|portion|share)\b", prompt):
+        return "pie"
+    elif re.search(r"\b(?:scatter|correlation|relationship|x vs y)\b", prompt):
+        return "scatter"
+    elif re.search(r"\b(?:radar|spider|skills|categories)\b", prompt):
+        return "radar"
+    elif re.search(r"\b(?:doughnut|donut|breakdown|allocation)\b", prompt):
+        return "doughnut"
     else:
-        return "bar"  # Default fallback
+        return "bar"  # default fallback
+
+
     
 def detect_output_format(prompt: str) -> str:
     """
@@ -88,3 +115,12 @@ def transform_sql_result_to_llm_json(columns, rows):
         "columns": columns,
         "rows": [dict(zip(columns, row)) for row in rows]
     }
+
+
+import tiktoken
+from fastapi.responses import JSONResponse
+
+# Utility to count tokens
+def count_tokens(text, model="gpt-4"):
+    enc = tiktoken.encoding_for_model(model)
+    return len(enc.encode(text))

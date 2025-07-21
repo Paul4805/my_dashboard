@@ -218,8 +218,9 @@ async function updateDashboard(dashboardId) {
 export function getFullChartConfig(chart) {
   if (!chart) return {};
 
-  const isPie = chart.config?.type === 'pie';
-  const dataset = chart.data.datasets[0] || {};
+  const type = chart.config?.type;
+  const isPieOrDoughnut = ['pie', 'doughnut'].includes(type);
+  const isRadar = type === 'radar';
 
   const config = {
     title: chart.options?.plugins?.title?.text || '',
@@ -230,7 +231,8 @@ export function getFullChartConfig(chart) {
     seriesData: []
   };
 
-  if (isPie) {
+  if (isPieOrDoughnut) {
+    const dataset = chart.data.datasets[0] || {};
     config.seriesData = chart.data.labels.map((label, index) => ({
       name: label,
       value: dataset.data?.[index] || 0,
@@ -241,21 +243,33 @@ export function getFullChartConfig(chart) {
         ? dataset.borderColor[index] 
         : dataset.borderColor
     }));
+  } else if (isRadar) {
+    config.seriesData = chart.data.datasets.map((ds) => ({
+      name: ds.label || '',
+      data: ds.data || [],
+      backgroundColor: ds.backgroundColor,
+      borderColor: ds.borderColor
+    }));
+    // No x/y axes in radar chart
+    config.xAxisLabel = '';
+    config.yAxisLabel = '';
   } else {
+    const dataset = chart.data.datasets[0] || {};
     config.seriesData = [{
       name: dataset.label || '',
       data: dataset.data || [],
       backgroundColor: Array.isArray(dataset.backgroundColor) 
         ? dataset.backgroundColor 
-        : [dataset.backgroundColor], // Always store as array for consistency
+        : [dataset.backgroundColor],
       borderColor: Array.isArray(dataset.borderColor) 
         ? dataset.borderColor 
         : [dataset.borderColor]
     }];
   }
 
-  console.log(`✅ Extracted config for ${chart.config?.type} chart:`, config);
+  console.log(`✅ Extracted config for ${type} chart:`, config);
   return config;
 }
+
 
 

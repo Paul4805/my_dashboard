@@ -17,3 +17,4 @@ oracledb
 openai
 mysql-connector-python
 prophet==1.1.7
+tiktoken

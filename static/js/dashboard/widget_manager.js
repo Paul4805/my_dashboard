@@ -77,13 +77,38 @@ function populateChartCustomization(chartType, config, chartElement) {
 
   const dataEditor = document.getElementById('data-editor');
 
-  if (chartType === 'pie') {
+  if (['pie', 'doughnut'].includes(chartType)) {
     config.seriesData.forEach((item, idx) => {
       const color = item.color || '#3498db';
       dataEditor.innerHTML += `
         <div style="margin-bottom:5px;">
           <input type="text" value="${item.name}" data-idx="${idx}" class="data-label-input" style="width:100px"/>
           <input type="number" value="${item.value}" data-idx="${idx}" class="data-value-input" style="width:60px"/>
+          <input type="color" value="${color}" data-idx="${idx}" class="data-color-input"/>
+        </div>
+      `;
+    });
+  } else if (chartType === 'scatter') {
+    config.seriesData[0].data.forEach((point, idx) => {
+      const color = config.seriesData[0].backgroundColor?.[idx] || '#3498db';
+      dataEditor.innerHTML += `
+        <div style="margin-bottom:5px;">
+          <label>X:</label>
+          <input type="number" value="${point.x}" data-idx="${idx}" class="data-x-input" style="width:60px"/>
+          <label>Y:</label>
+          <input type="number" value="${point.y}" data-idx="${idx}" class="data-y-input" style="width:60px"/>
+          <input type="color" value="${color}" data-idx="${idx}" class="data-color-input"/>
+        </div>
+      `;
+    });
+  } else if (chartType === 'radar') {
+    const labels = config.indicator.map(i => i.name);
+    config.seriesData[0].data.forEach((val, idx) => {
+      const color = config.seriesData[0].backgroundColor?.[idx] || '#3498db';
+      dataEditor.innerHTML += `
+        <div style="margin-bottom:5px;">
+          <label>${labels[idx]}</label>
+          <input type="number" value="${val}" data-idx="${idx}" class="data-value-input" style="width:60px"/>
           <input type="color" value="${color}" data-idx="${idx}" class="data-color-input"/>
         </div>
       `;
@@ -144,14 +169,12 @@ function applyChartChanges() {
   const chart = target._chartInstance;
   const chartType = chart.config.type;
 
-  // Get input values
   const title = document.getElementById('chart-title-input').value;
   const fontSize = parseInt(document.getElementById('title-font-size-input').value) || 10;
   const xAxis = document.getElementById('xaxis-input')?.value || '';
   const yAxis = document.getElementById('yaxis-input')?.value || '';
   const datasetName = document.getElementById('dataset-name-input').value;
 
-  // Get data values
   const labelInputs = document.querySelectorAll('.data-label-input');
   const valueInputs = document.querySelectorAll('.data-value-input');
   const colorInputs = document.querySelectorAll('.data-color-input');
@@ -161,32 +184,87 @@ function applyChartChanges() {
   const backgroundColors = [];
   const borderColors = [];
 
-  labelInputs.forEach((input, idx) => {
-    labels.push(input.value);
-    data.push(parseFloat(valueInputs[idx].value) || 0);
-    const color = colorInputs[idx].value;
-    backgroundColors.push(color);
-    // Create slightly darker version for border
-    borderColors.push(darkenColor(color, 20));
-  });
-
-  // Update chart configuration
+  // Title
   chart.options.plugins.title = {
     display: true,
     text: title,
-    font: {
-      size: fontSize
-    },
+    font: { size: fontSize },
     padding: { top: 5, bottom: 5 }
   };
 
-  if (chartType !== 'pie') {
-    // Bar/Line chart configuration
-    if (!chart.options.scales) {
-      chart.options.scales = {};
-    }
-    
-    // X-Axis
+  if (['scatter'].includes(chartType)) {
+    const xInputs = document.querySelectorAll('.data-x-input');
+    const yInputs = document.querySelectorAll('.data-y-input');
+
+    const scatterData = [];
+    xInputs.forEach((xInput, idx) => {
+      const x = parseFloat(xInput.value) || 0;
+      const y = parseFloat(yInputs[idx].value) || 0;
+      const color = colorInputs[idx].value;
+      scatterData.push({ x, y });
+      backgroundColors.push(color);
+      borderColors.push(darkenColor(color, 20));
+    });
+
+    chart.data.datasets[0].data = scatterData;
+    chart.data.datasets[0].label = datasetName;
+    chart.data.datasets[0].backgroundColor = backgroundColors;
+    chart.data.datasets[0].borderColor = borderColors;
+    chart.data.datasets[0].pointRadius = 4;
+    chart.data.datasets[0].pointHoverRadius = 5;
+
+  } else if (chartType === 'radar') {
+    valueInputs.forEach((valInput, idx) => {
+      data.push(parseFloat(valInput.value) || 0);
+      const color = colorInputs[idx].value;
+      backgroundColors.push(color);
+      borderColors.push(darkenColor(color, 20));
+    });
+
+    chart.data.datasets[0].data = data;
+    chart.data.datasets[0].label = datasetName;
+    chart.data.datasets[0].backgroundColor = backgroundColors[0] || '#3498db';
+    chart.data.datasets[0].borderColor = borderColors[0] || '#2c80b4';
+    chart.data.datasets[0].borderWidth = 2;
+
+  } else if (['pie', 'doughnut'].includes(chartType)) {
+    labelInputs.forEach((input, idx) => {
+      labels.push(input.value);
+      data.push(parseFloat(valueInputs[idx].value) || 0);
+      const color = colorInputs[idx].value;
+      backgroundColors.push(color);
+      borderColors.push(darkenColor(color, 20));
+    });
+
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = data;
+    chart.data.datasets[0].backgroundColor = backgroundColors;
+    chart.data.datasets[0].borderColor = borderColors;
+    chart.data.datasets[0].borderWidth = 1;
+    chart.data.datasets[0].label = datasetName;
+
+    chart.options.plugins.legend = {
+      display: true,
+      position: 'right',
+      labels: {
+        boxWidth: 10,
+        font: { size: 8 },
+        padding: 5
+      }
+    };
+
+  } else {
+    // bar/line fallback
+    labelInputs.forEach((input, idx) => {
+      labels.push(input.value);
+      data.push(parseFloat(valueInputs[idx].value) || 0);
+      const color = colorInputs[idx].value;
+      backgroundColors.push(color);
+      borderColors.push(darkenColor(color, 20));
+    });
+
+    if (!chart.options.scales) chart.options.scales = {};
+
     chart.options.scales.x = {
       ...chart.options.scales.x,
       title: {
@@ -194,15 +272,10 @@ function applyChartChanges() {
         text: xAxis,
         font: { size: 9 }
       },
-      ticks: { 
-        maxRotation: 45, 
-        minRotation: 45, 
-        font: { size: 8 } 
-      },
+      ticks: { maxRotation: 45, minRotation: 45, font: { size: 8 } },
       grid: { display: false }
     };
 
-    // Y-Axis
     chart.options.scales.y = {
       ...chart.options.scales.y,
       title: {
@@ -215,61 +288,37 @@ function applyChartChanges() {
       grid: { color: 'rgba(0, 0, 0, 0.05)' }
     };
 
-    // Update dataset
     chart.data.labels = labels;
     chart.data.datasets[0].data = data;
     chart.data.datasets[0].label = datasetName;
     chart.data.datasets[0].backgroundColor = backgroundColors;
     chart.data.datasets[0].borderColor = borderColors;
     chart.data.datasets[0].borderWidth = 1;
-    
+
     if (chartType === 'line') {
       chart.data.datasets[0].tension = 0.4;
       chart.data.datasets[0].pointBackgroundColor = borderColors;
     }
-  } else {
-    // Pie chart configuration
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = data;
-    chart.data.datasets[0].backgroundColor = backgroundColors;
-    chart.data.datasets[0].borderColor = borderColors;
-    chart.data.datasets[0].borderWidth = 1;
-    chart.data.datasets[0].label = datasetName;
-    
-    chart.options.plugins.legend = {
-      display: true,
-      position: 'right',
-      labels: {
-        boxWidth: 10,
-        font: { size: 8 },
-        padding: 5
-      }
-    };
   }
 
-  // Update the chart
   chart.update();
-  // Update button label - use the stored button reference
+
   if (target._widgetButton) {
     target._widgetButton.textContent = `${chartType.toUpperCase()} - ${title}`;
     target._widgetButton.title = title;
-    target._widgetButton.dataset.widgetId = widgetId; // Ensure ID is current
+    target._widgetButton.dataset.widgetId = widgetId;
   } else {
-    // Fallback - find button by widget ID if reference was lost
     const btn = document.querySelector(`.widget-btn[data-widget-id="${widgetId}"]`);
     if (btn) {
       btn.textContent = `${chartType.toUpperCase()} - ${title}`;
       btn.title = title;
-      // Store the reference for future updates
       target._widgetButton = btn;
     }
   }
 
-  // Update sessionStorage
   saveDashboardState();
-
-  
 }
+
 
 window.applyChartChanges = applyChartChanges;
 window.deleteCurrentWidget = deleteCurrentWidget;

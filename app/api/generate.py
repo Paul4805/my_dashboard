@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.dependencies import get_current_user, get_db
 from app.generatefuncs import generate_sql_from_prompt, generate_echarts_config, classify_intent_with_llm, generate_sql_from_prompt_for_prophet, generate_forecast_config,get_period
-from app.generate_helper import detect_chart_type, detect_output_format, save_query_history, transform_sql_result_to_llm_json
+from app.generate_helper import detect_chart_type, detect_output_format, save_query_history, transform_sql_result_to_llm_json, count_tokens
 from app.techniques import run_forecasting
 from app.session_connection import session_conn_manager
 from app.models.user import User
@@ -55,7 +55,28 @@ async def generate_dashboard(
             print(f"❌ [ERROR] SQL Execution Failed: {e}")
             save_query_history(db, current_user, prompt, sql_query, "failed", None)
             return JSONResponse(status_code=500, content={"error": "SQL execution failed"})
+        token_limit = 100_000
+        input_token_count = count_tokens(prompt) + count_tokens(str(transformed_data))
+        print(f"🔢 [DEBUG] Total tokens: {input_token_count}")
+
+        if input_token_count > token_limit:
+            print(f"⚠️ [WARNING] Token limit exceeded ({input_token_count} > {token_limit}). Truncating data.")
+
+            # Truncate data safely
+            if isinstance(transformed_data, list):
+                transformed_data = transformed_data[:100]
+            elif isinstance(transformed_data, dict):
+                if "data" in transformed_data and isinstance(transformed_data["data"], list):
+                    transformed_data["data"] = transformed_data["data"][:100]
+                else:
+                    print("⚠️ [WARNING] 'data' key not in expected list format, skipping truncation.")
+            else:
+                print("❌ [ERROR] Unrecognized transformed_data structure. Skipping truncation.")
+        print(prompt)
+        print(data.get("chart_type"))
         chart_type = data.get("chart_type") or detect_chart_type(prompt)
+        print("after detection")
+        print(chart_type)
         echarts_config = generate_echarts_config(prompt, transformed_data, chart_type)
         result_payload = {
             "chart_type": chart_type,

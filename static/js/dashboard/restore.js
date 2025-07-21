@@ -9,6 +9,7 @@ export function restoreDashboardState() {
   }
 
   const savedWidgets = JSON.parse(sessionStorage.getItem('widgets') || '[]');
+  console.log(savedWidgets)
   
   if (!savedWidgets.length) {
     console.log('No widgets found in sessionStorage');
@@ -23,6 +24,8 @@ export function restoreDashboardState() {
         console.warn('Skipping widget - missing config or type', widgetData);
         return;
       }
+      console.log(widgetData.config)
+      console.log(widgetData.type)
 
       const chartContainer = renderChartToCanvas(
         widgetData.config, 
