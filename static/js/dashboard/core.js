@@ -107,6 +107,11 @@ function handleCanvasSizeChange() {
     canvas.style.height = '1191px';
     customInputs.style.display = 'none';
     sessionStorage.setItem('canvasSize', JSON.stringify({ type: 'a3' }));
+  } else if (size === 'webpage') {
+    canvas.style.width = '1280px';
+    canvas.style.height = '720px';
+    customInputs.style.display = 'none';
+    sessionStorage.setItem('canvasSize', JSON.stringify({ type: 'webpage' }));
   } else if (size === 'custom') {
     customInputs.style.display = 'block';
   }
@@ -136,6 +141,10 @@ function restoreDashboardFromData(dashboardData) {
         canvas.style.width = '842px';
         canvas.style.height = '1191px';
         sizeSelect.value = 'a3';
+      } else if (parsedData.canvasSize.type === 'webpage') {
+        canvas.style.width = '1280px';
+        canvas.style.height = '720px';
+        sizeSelect.value = 'webpage';
       } else if (parsedData.canvasSize.type === 'custom') {
         canvas.style.width = `${parsedData.canvasSize.width}px`;
         canvas.style.height = `${parsedData.canvasSize.height}px`;
@@ -216,6 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.style.width = '842px';
         canvas.style.height = '1191px';
         sizeSelect.value = 'a3';
+      } else if (savedSize.type === 'webpage') {
+        console.log('Setting webpage size (842x1191px)');
+        canvas.style.width = '1280px';
+        canvas.style.height = '720px';
+        sizeSelect.value = 'webpage';
       } else if (savedSize.type === 'custom') {
         console.log(`Setting custom size (${savedSize.width}x${savedSize.height}px)`);
         canvas.style.width = `${savedSize.width}px`;

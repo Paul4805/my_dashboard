@@ -130,3 +130,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+
+function openSqliteForm() {
+  document.getElementById('dbModal').style.display = 'none';
+  document.getElementById('sqliteModal').style.display = 'block';
+}
+
+function closeSqliteForm() {
+  document.getElementById('sqliteModal').style.display = 'none';
+  document.getElementById('dbModal').style.display = 'block';
+}

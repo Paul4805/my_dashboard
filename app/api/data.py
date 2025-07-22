@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form, Depends
+from fastapi import APIRouter, Request, Form, Depends, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -14,6 +14,8 @@ from app.database import get_db
 from fastapi.responses import RedirectResponse
 from urllib.parse import urlencode
 from urllib.parse import quote_plus
+import sqlite3
+import os
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -40,58 +42,105 @@ async def data_tab(
 @router.post("/dashboard/data", response_class=HTMLResponse)
 async def handle_postgres_connection(
     request: Request,
-    host: str = Form(...),
-    port: int = Form(...),
-    database: str = Form(...),
-    user: str = Form(...),
-    password: str = Form(...),
-    sslmode: str = Form(...),
     db_type: str = Form(...),
+    host: str = Form(None),
+    port: int = Form(None),
+    database: str = Form(None),
+    user: str = Form(None),
+    password: str = Form(None),
+    sslmode: str = Form(None),
+    sqlite_file: UploadFile = File(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     try:
-        # Try to connect to PostgreSQL
-        conn = psycopg.connect(
-            host=host,
-            port=port,
-            dbname=database,
-            user=user,
-            password=password,
-            sslmode=sslmode,
-            connect_timeout=20
-        )
-        conn.close()
+        if db_type.lower() == "postgresql":
+            # Try to connect to PostgreSQL
+            conn = psycopg.connect(
+                host=host,
+                port=port,
+                dbname=database,
+                user=user,
+                password=password,
+                sslmode=sslmode,
+                connect_timeout=20
+            )
+            conn.close()
 
-        # Check for existing connection
-        existing_conn = db.query(UserConnection).filter_by(
-            user_id=current_user.id,
-            db_type=db_type,
-            host=host,
-            port=port,
-            database=database,
-            username=user
-        ).first()
-
-        if existing_conn:
-            message = "🔄 Connection successful but already exists."
-        else:
-            new_conn = UserConnection(
+            # Check for existing connection
+            existing_conn = db.query(UserConnection).filter_by(
                 user_id=current_user.id,
                 db_type=db_type,
                 host=host,
                 port=port,
                 database=database,
-                username=user,
-                encrypted_password=encrypt_password(password),
-                sslmode=sslmode
-            )
-            db.add(new_conn)
-            db.commit()
-            message = "✅ Connection successful!"
+                username=user
+            ).first()
+
+            if existing_conn:
+                message = "🔄 Connection successful but already exists."
+            else:
+                new_conn = UserConnection(
+                    user_id=current_user.id,
+                    db_type=db_type,
+                    host=host,
+                    port=port,
+                    database=database,
+                    username=user,
+                    encrypted_password=encrypt_password(password),
+                    sslmode=sslmode
+                )
+                db.add(new_conn)
+                db.commit()
+                message = "✅ Connection successful!"
+        # === SQLITE ===
+        elif db_type.lower() == "sqlite":
+            if not sqlite_file:
+                raise ValueError("No SQLite file uploaded.")
+
+            os.makedirs("uploaded_sqlite", exist_ok=True)
+            filepath = os.path.join("uploaded_sqlite", sqlite_file.filename)
+
+            with open(filepath, "wb") as f:
+                f.write(await sqlite_file.read())
+
+            # Test connection
+            conn = sqlite3.connect(filepath)
+            conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            conn.close()
+
+            existing_conn = db.query(UserConnection).filter_by(
+                user_id=current_user.id,
+                db_type="sqlite",
+                database=filepath
+            ).first()
+
+            if existing_conn:
+                message = "🔄 SQLite file uploaded but already exists."
+            else:
+                new_conn = UserConnection(
+                    user_id=current_user.id,
+                    db_type="sqlite",
+                    database=filepath,
+                    username="(sqlite)",  # placeholder
+                    host=None,
+                    port=None,
+                    encrypted_password=None,
+                    sslmode=None
+                )
+                db.add(new_conn)
+                db.commit()
+                message = "✅ SQLite file uploaded and connection saved."
+
+        else:
+            message = f"❌ Unsupported database type: {db_type}"
 
     except OperationalError as e:
-        message = f"❌ Connection failed: {str(e)}"
+        message = f"❌ PostgreSQL connection failed: {str(e)}"
+    except sqlite3.Error as e:
+        message = f"❌ SQLite connection failed: {str(e)}"
+    except Exception as e:
+        message = f"❌ Unexpected error: {str(e)}"
 
     # Redirect with message in query string
     params = urlencode({"message": message})
@@ -114,9 +163,16 @@ async def get_data_previews(
 
     for conn in connections:
         try:
-            username = quote_plus(conn.username)
-            password = quote_plus(conn.get_decrypted_password())
-            engine_url = f"postgresql://{username}:{password}@{conn.host}:{conn.port}/{conn.database}?sslmode={conn.sslmode}"
+            db_type = conn.db_type.lower()
+            
+            # === Handle SQLite ===
+            if db_type == "sqlite":
+                engine_url = f"sqlite:///{conn.database}"
+            else:
+                username = quote_plus(conn.username or "")
+                password = quote_plus(conn.get_decrypted_password() or "")
+                engine_url = f"{db_type}://{username}:{password}@{conn.host}:{conn.port}/{conn.database}?sslmode={conn.sslmode}"
+
             engine = create_engine(engine_url)
 
             inspector = inspect(engine)

@@ -33,7 +33,7 @@ export function saveDashboardState() {
 
   let canvasSize = {};
 
-  if (sizeSelect.value === 'a4' || sizeSelect.value === 'a3') {
+  if (sizeSelect.value === 'a4' || sizeSelect.value === 'a3'|| sizeSelect.value === 'webpage') {
     canvasSize = { type: sizeSelect.value };
   } else if (sizeSelect.value === 'custom') {
     const width = parseInt(document.getElementById('custom-width').value) || canvas.offsetWidth;
