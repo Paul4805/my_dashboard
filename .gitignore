@@ -10,3 +10,4 @@ alembic/versions/
 # Logs and temp files
 *.log
 *.pyc
+uploaded_sqlite/
