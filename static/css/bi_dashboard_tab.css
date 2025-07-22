@@ -1,8 +1,9 @@
 /* Font */
 body {
   font-family: 'Montserrat', sans-serif;
-  overflow-y: auto;
   height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Top Controls Layout */
