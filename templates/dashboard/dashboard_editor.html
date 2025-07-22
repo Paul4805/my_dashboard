@@ -23,13 +23,14 @@
         <a href="/dashboard/bidashboard" class="editor-button exit-button" data-i18n="Exit Editor">Exit Editor</a>
         <button class="editor-button save-button" data-i18n="Save Dashboard">Save Dashboard</button>
         <div class="export-dropdown">
-          <button class="editor-button export-button" onclick="toggleExportDropdown()" data-i18n="Export As">Export As
-            ⬇</button>
+          <button class="editor-button export-button" onclick="toggleExportDropdown()" data-i18n="Export As">
+            Export As ⬇
+          </button>
           <div id="exportOptions" class="dropdown-content">
             <button onclick="exportAsPDF()">📄 <span data-i18n="PDF">PDF</span></button>
+            <button onclick="exportAsHTML()">🌐 <span data-i18n="Webpage">Webpage (.html)</span></button>
           </div>
         </div>
-
         <!-- Language Switch -->
         <div class="language-dropdown" style="margin-left: 20px;">
           <label for="languageSelect" data-i18n="Language"
@@ -51,6 +52,7 @@
           <select id="canvas-size" class="styled-dropdown">
             <option value="a4" data-i18n="A4">A4 (595x842 px)</option>
             <option value="a3" data-i18n="A3">A3 (842x1191 px)</option>
+            <option value="webpage" data-i18n="Webpage">Webpage (1280x720 px)</option>
             <option value="custom" data-i18n="Custom">Custom</option>
           </select>
         </div>
@@ -201,6 +203,25 @@
     // Restore original zoom
     zoomWrapper.style.transform = originalTransform;
   }
+
+  function exportAsHTML() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const dashboardId = urlParams.get("dashboard_id");
+
+  if (!dashboardId) {
+    alert("❌ You must save the dashboard before exporting.");
+    return;
+  }
+
+  const exportUrl = `/export_html/${dashboardId}`;
+  const link = document.createElement('a');
+  link.href = exportUrl;
+  link.download = `dashboard_${dashboardId}.html`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 
 </script>
 

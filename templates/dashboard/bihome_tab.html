@@ -92,6 +92,7 @@
             <button class="db-option" data-type="MySQL" data-i18n="MySQL">MySQL</button>
             <button class="db-option" data-type="MSSQL" data-i18n="MSSQL">MSSQL</button>
             <button class="db-option" data-type="Oracle" data-i18n="Oracle">Oracle</button>
+            <button class="db-option" data-type="SQLite" onclick="openSqliteForm()" data-i18n="SQLite">SQLite</button>
         </div>
     </div>
 </div>
@@ -123,6 +124,25 @@
     </form>
   </div>
 </div>
+
+
+
+<!-- SQLite Modal -->
+<div id="sqliteModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeSqliteForm()" data-i18n="×">&times;</span>
+    <h3 data-i18n="Upload SQLite Database">Upload SQLite Database</h3>
+    <form id="sqliteForm" method="post" action="/dashboard/data" enctype="multipart/form-data">
+      <input type="hidden" name="db_type" value="sqlite">
+      
+      <label data-i18n="SQLite File:">SQLite File:</label>
+      <input type="file" name="sqlite_file" accept=".sqlite,.db" required>
+
+      <button type="submit" data-i18n="Connect">Connect</button>
+    </form>
+  </div>
+</div>
+
 
 {% endblock %}
 

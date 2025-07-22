@@ -6,6 +6,7 @@ from app.models.user import User
 from cryptography.fernet import Fernet
 import os
 from dotenv import load_dotenv
+import sqlite3
 
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
     session_id = request.cookies.get("session_id")
@@ -42,7 +43,15 @@ from app.models.user_connection import UserConnection
 
 def establish_connection(conn: UserConnection):
     print(f"[DEBUG] Connecting to {conn.db_type} at {conn.host}:{conn.port}/{conn.database}")
-
+    
+    if conn.db_type.lower() == "sqlite":
+        if not os.path.exists(conn.database):
+            raise FileNotFoundError(f"SQLite file not found: {conn.database}")
+        
+        connection = sqlite3.connect(conn.database)
+        print(f"[DEBUG] SQLite connection established: {conn.database}")
+        return connection
+    
     password = decrypt_password(conn.encrypted_password)
 
     if conn.db_type.lower() == "postgresql":
@@ -73,8 +82,8 @@ def establish_connection(conn: UserConnection):
 def fetch_schema_description(connection, db_type: str, db_name: str) -> str:
     print(f"[DEBUG] Fetching schema for {db_type} - {db_name}")
     cursor = connection.cursor()
+    table_columns = {}  # ✅ Always initialize
 
-    # Step 1: Get full schema with columns
     if db_type.lower() == "postgresql":
         cursor.execute("""
             SELECT table_name, column_name, data_type
@@ -82,6 +91,10 @@ def fetch_schema_description(connection, db_type: str, db_name: str) -> str:
             WHERE table_schema = 'public'
             ORDER BY table_name, ordinal_position
         """)
+        rows = cursor.fetchall()
+        for table, column, dtype in rows:
+            table_columns.setdefault(table, []).append((column, dtype))
+
     elif db_type.lower() == "mysql":
         cursor.execute("""
             SELECT table_name, column_name, data_type
@@ -89,15 +102,21 @@ def fetch_schema_description(connection, db_type: str, db_name: str) -> str:
             WHERE table_schema = %s
             ORDER BY table_name, ordinal_position
         """, (db_name,))
+        rows = cursor.fetchall()
+        for table, column, dtype in rows:
+            table_columns.setdefault(table, []).append((column, dtype))
+
+    elif db_type.lower() == "sqlite":
+        # ✅ Only do SQLite-specific logic — don't run shared `fetchall()` below
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+        tables = [row[0] for row in cursor.fetchall()]
+        for table in tables:
+            cursor.execute(f"PRAGMA table_info({table})")
+            columns_info = cursor.fetchall()  # (cid, name, type, notnull, dflt_value, pk)
+            table_columns[table] = [(col[1], col[2]) for col in columns_info]
+
     else:
         raise ValueError(f"Unsupported DB type for schema fetch: {db_type}")
-
-    rows = cursor.fetchall()
-
-    # Step 2: Organize columns by table
-    table_columns = {}
-    for table, column, dtype in rows:
-        table_columns.setdefault(table, []).append((column, dtype))
 
     schema_description = []
     total_columns = 0
@@ -133,6 +152,7 @@ def fetch_schema_description(connection, db_type: str, db_name: str) -> str:
 
 
 
+
 def init_user_connections(session_id: str, user_id: int, db: Session):
     from app.models.user_connection import UserConnection
     from app.session_connection import session_conn_manager
@@ -144,6 +164,7 @@ def init_user_connections(session_id: str, user_id: int, db: Session):
         return
 
     for conn in user_connections:
+        db_type = conn.db_type.lower()
         db_id = f"{conn.db_type} - {conn.database}"
         print(f"[DEBUG] Handling connection: {db_id}")
 
@@ -153,7 +174,15 @@ def init_user_connections(session_id: str, user_id: int, db: Session):
 
         try:
             print(f"[DEBUG] Establishing new connection for {db_id}")
-            connection = establish_connection(conn)
+            # === SQLITE ===
+            if db_type == "sqlite":
+                if not os.path.exists(conn.database):
+                    print(f"[ERROR] SQLite file not found: {conn.database}")
+                    continue
+                connection = sqlite3.connect(conn.database)
+            else:
+                # For PostgreSQL or others
+                connection = establish_connection(conn)
             schema = fetch_schema_description(connection, conn.db_type, conn.database)
             session_conn_manager.set_connection(session_id, db_id, connection, schema)
             print(f"[DEBUG] Connection established and cached: {db_id}")
