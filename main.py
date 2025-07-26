@@ -22,6 +22,7 @@ from app.api import thumbnail
 from app.api import askai
 from app.api import wip
 from app.api import html_generation
+from app.api import generate_analysis
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi import Request
@@ -73,5 +74,6 @@ app.include_router(thumbnail.router)
 app.include_router(askai.router)
 app.include_router(wip.router)
 app.include_router(html_generation.router)
+app.include_router(generate_analysis.router)
 
 Base.metadata.create_all(bind=engine)

@@ -42,14 +42,13 @@ from app.dependencies import decrypt_password
 from app.models.user_connection import UserConnection
 
 def establish_connection(conn: UserConnection):
-    print(f"[DEBUG] Connecting to {conn.db_type} at {conn.host}:{conn.port}/{conn.database}")
+    
     
     if conn.db_type.lower() == "sqlite":
         if not os.path.exists(conn.database):
             raise FileNotFoundError(f"SQLite file not found: {conn.database}")
         
         connection = sqlite3.connect(conn.database)
-        print(f"[DEBUG] SQLite connection established: {conn.database}")
         return connection
     
     password = decrypt_password(conn.encrypted_password)
@@ -75,12 +74,12 @@ def establish_connection(conn: UserConnection):
     else:
         raise ValueError(f"Unsupported database type: {conn.db_type}")
 
-    print(f"[DEBUG] Connection established successfully for {conn.db_type}")
+    
     return connection
 
 
 def fetch_schema_description(connection, db_type: str, db_name: str) -> str:
-    print(f"[DEBUG] Fetching schema for {db_type} - {db_name}")
+    
     cursor = connection.cursor()
     table_columns = {}  # ✅ Always initialize
 
@@ -146,7 +145,6 @@ def fetch_schema_description(connection, db_type: str, db_name: str) -> str:
 
     cursor.close()
 
-    print(f"[DEBUG] Schema fetched successfully: {total_columns} columns across {len(table_columns)} tables")
     return "\n".join(schema_description)
 
 
@@ -156,28 +154,28 @@ def fetch_schema_description(connection, db_type: str, db_name: str) -> str:
 def init_user_connections(session_id: str, user_id: int, db: Session):
     from app.models.user_connection import UserConnection
     from app.session_connection import session_conn_manager
-    print(f"[DEBUG] Fetching connections for user {user_id}")
+    
     user_connections = db.query(UserConnection).filter(UserConnection.user_id == user_id).all()
 
     if not user_connections:
-        print(f"[DEBUG] No connections found for user {user_id}")
+        
         return
 
     for conn in user_connections:
         db_type = conn.db_type.lower()
         db_id = f"{conn.db_type} - {conn.database}"
-        print(f"[DEBUG] Handling connection: {db_id}")
+        
 
         if session_conn_manager.get_connection(session_id, db_id):
-            print(f"[DEBUG] Already cached: {db_id}")
+            
             continue
 
         try:
-            print(f"[DEBUG] Establishing new connection for {db_id}")
+            
             # === SQLITE ===
             if db_type == "sqlite":
                 if not os.path.exists(conn.database):
-                    print(f"[ERROR] SQLite file not found: {conn.database}")
+                    
                     continue
                 connection = sqlite3.connect(conn.database)
             else:
@@ -185,7 +183,7 @@ def init_user_connections(session_id: str, user_id: int, db: Session):
                 connection = establish_connection(conn)
             schema = fetch_schema_description(connection, conn.db_type, conn.database)
             session_conn_manager.set_connection(session_id, db_id, connection, schema)
-            print(f"[DEBUG] Connection established and cached: {db_id}")
+            
         except Exception as e:
             print(f"[ERROR] Failed to connect to {db_id}: {e}")
 

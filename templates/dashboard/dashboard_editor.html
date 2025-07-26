@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body class="fade-in" style="opacity: 0;"></body>
@@ -101,7 +102,34 @@
       </select>
     </div>
     <button id="generateDashboardBtn" data-i18n="Generate Dashboard">Generate Dashboard</button>
+    <!-- NEW: Table Analysis Button -->
+    <button id="analyzeTableBtn" style="margin-top: 10px;">🔍 Get Table Analysis</button>
+
+    <!-- NEW: Table Dropdown (hidden initially) -->
+    <div id="tableSelector" style="margin-top: 10px; display: none;">
+      <label for="table-select" data-i18n="Select Table">Select Table:</label><br><br>
+      <select id="table-select" style="width: 100%; padding: 4px; font-size: 13px;"></select>
+      <button id="runDetailedAnalysis" style="margin-top: 8px;">📊 Run EDA</button>
+    </div>
   </div>
+  <div id="edaModal">
+    <div class="eda-modal-content">
+      <h3>📊 Exploratory Data Analysis</h3>
+
+      <div id="edaLoading" class="eda-loading">
+        <div class="spinner"></div>
+        <p>Generating insights...</p>
+      </div>
+
+      <div id="edaContent" class="eda-content"></div>
+
+      <button onclick="closeModal()" class="eda-close-btn">Close</button>
+    </div>
+  </div>
+
+
+
+
 </div>
 
 <!-- Save Modal -->
@@ -234,6 +262,95 @@
   });
 
 </script>
+
+
+
+<script>
+document.getElementById("analyzeTableBtn").addEventListener("click", async () => {
+  const dbId = document.getElementById("db-select").value;
+  if (!dbId) return alert("Please select a database.");
+
+  // Fetch table list
+  const res = await fetch(`/get_tables?db_id=${dbId}`);
+  const data = await res.json();
+
+  if (!data.tables || data.tables.length === 0) {
+    alert("No tables found in the selected database.");
+    return;
+  }
+
+  // Populate table dropdown
+  const tableSelect = document.getElementById("table-select");
+  tableSelect.innerHTML = ""; // Clear existing options
+  data.tables.forEach((t) => {
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.innerText = t;
+    tableSelect.appendChild(opt);
+  });
+
+  // Show selector
+  document.getElementById("tableSelector").style.display = "block";
+});
+
+
+function closeModal() {
+  document.getElementById("edaModal").style.display = "none";
+}
+
+</script>
+
+<script>
+document.getElementById("runDetailedAnalysis").addEventListener("click", () => {
+  const dbId = document.getElementById("db-select").value;
+  const tableName = document.getElementById("table-select").value;
+
+  if (!dbId || !tableName) {
+    return alert("Please select both a database and a table.");
+  }
+
+  // Show modal and loading
+  document.getElementById("edaModal").style.display = "block";
+  const edaContent = document.getElementById("edaContent");
+  const edaLoading = document.getElementById("edaLoading");
+  edaContent.style.display = "block";
+  edaLoading.style.display = "none";
+  edaContent.innerHTML = "<p>🔄 Starting live EDA stream...</p>";
+
+  const evtSource = new EventSource(`/dashboard/detailed_analysis/stream?db_id=${dbId}&table_name=${tableName}`);
+
+  evtSource.onmessage = function(event) {
+    const contentDiv = document.getElementById("edaContent");
+
+    if (event.data.startsWith("ERROR")) {
+      contentDiv.innerHTML += `<p style="color:red;">❌ ${event.data}</p>`;
+    } else {
+      try {
+        const parsed = JSON.parse(event.data);  // Try to parse JSON if possible
+        if (parsed.insight && parsed.plot) {
+          contentDiv.innerHTML += `<h3>🧠 ${parsed.plot}</h3>`;
+          contentDiv.innerHTML += marked.parse(parsed.insight);  // Render as markdown
+        } else {
+          contentDiv.innerHTML += `<p>${event.data}</p>`;
+        }
+      } catch {
+        // Not JSON, just append normally
+        contentDiv.innerHTML += `<p>${event.data}</p>`;
+      }
+    }
+
+    contentDiv.scrollTop = contentDiv.scrollHeight;
+  };
+
+
+  evtSource.onerror = function() {
+    edaContent.innerHTML += "<p style='color:red;'>❌ Connection lost or completed.</p>";
+    evtSource.close();
+  };
+});
+</script>
+
+
 {% endblock %}
 
 </body>

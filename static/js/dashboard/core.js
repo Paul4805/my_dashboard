@@ -38,7 +38,7 @@ async function generateDashboard() {
     }
 
     const result = await response.json();
-    console.log('Dashboard generation result:', result);
+    
 
     if (result.status === 'success') {
       const intent = result.intent;
@@ -199,39 +199,37 @@ function restoreDashboardFromData(dashboardData) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('=== DASHBOARD INITIALIZATION STARTED ===');
+  
 
   try {
-    console.log('1. Checking for saved canvas size...');
-    console.log('Retrieving canvasSize from sessionStorage...', sessionStorage.getItem('canvasSize'));
+    
     const savedSize = JSON.parse(sessionStorage.getItem('canvasSize'));
-    console.log('Retrieved canvasSize from sessionStorage:', savedSize);
+
 
     const canvas = document.getElementById('dashboardCanvas');
     const sizeSelect = document.getElementById('canvas-size');
-    console.log('Canvas element:', canvas);
-    console.log('Size select element:', sizeSelect);
+
 
     if (savedSize) {
-      console.log('Found saved canvas size configuration');
+
 
       if (savedSize.type === 'a4') {
-        console.log('Setting A4 size (595x842px)');
+
         canvas.style.width = '595px';
         canvas.style.height = '842px';
         sizeSelect.value = 'a4';
       } else if (savedSize.type === 'a3') {
-        console.log('Setting A3 size (842x1191px)');
+
         canvas.style.width = '842px';
         canvas.style.height = '1191px';
         sizeSelect.value = 'a3';
       } else if (savedSize.type === 'webpage') {
-        console.log('Setting webpage size (842x1191px)');
+
         canvas.style.width = '1280px';
         canvas.style.height = '720px';
         sizeSelect.value = 'webpage';
       } else if (savedSize.type === 'custom') {
-        console.log(`Setting custom size (${savedSize.width}x${savedSize.height}px)`);
+
         canvas.style.width = `${savedSize.width}px`;
         canvas.style.height = `${savedSize.height}px`;
         sizeSelect.value = 'custom';
@@ -239,24 +237,23 @@ document.addEventListener('DOMContentLoaded', () => {
         customInputs.style.display = 'block';
         document.getElementById('custom-width').value = savedSize.width;
         document.getElementById('custom-height').value = savedSize.height;
-        console.log('Custom inputs shown and populated:', customInputs);
+
       }
     } else {
-      console.log('No saved canvas size found, defaulting to A4');
+
       sizeSelect.value = 'a4';
       handleCanvasSizeChange();
     }
 
     // Restore widgets if available
     // Replace the widget restoration block with:
-    console.log('2. Checking for saved widgets...');
+
     const savedWidgets = sessionStorage.getItem('widgets');
 
     if (savedWidgets) {
       try {
         const widgets = JSON.parse(savedWidgets);
-        console.log(`Found ${widgets.length} saved widgets:`, widgets);
-        console.log('Starting widget restoration...');
+
         restoreDashboardState();
       } catch (e) {
         console.error('Failed to parse saved widgets:', e);
@@ -268,17 +265,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Center view
-    console.log('3. Centering canvas view...');
+
     const centerScroll = () => {
-      console.log('Checking scroll dimensions...');
-      console.log('Scroll height:', canvasArea.scrollHeight, 'Client height:', canvasArea.clientHeight);
-      console.log('Scroll width:', canvasArea.scrollWidth, 'Client width:', canvasArea.clientWidth);
+
 
       if (canvasArea.scrollHeight > canvasArea.clientHeight ||
         canvasArea.scrollWidth > canvasArea.clientWidth) {
         const targetTop = (canvasArea.scrollHeight - canvasArea.clientHeight) / 2;
         const targetLeft = (canvasArea.scrollWidth - canvasArea.clientWidth) / 2;
-        console.log(`Scrolling to position (top: ${targetTop}, left: ${targetLeft})`);
+
 
         canvasArea.scrollTo({
           top: targetTop,
@@ -290,30 +285,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    console.log('Initial centering attempt...');
+
     centerScroll();
 
     setTimeout(() => {
-      console.log('Delayed centering attempt (after 100ms)...');
       centerScroll();
     }, 100);
 
   } catch (error) {
     console.error('!!! DASHBOARD INITIALIZATION ERROR !!!', error);
-    console.log('Falling back to default A4 size');
+
     document.getElementById('canvas-size').value = 'a4';
     handleCanvasSizeChange();
   }
 
   // Exit button handler
-  console.log('4. Setting up exit button handler...');
+
   const exitButton = document.querySelector('.editor-button.exit-button');
   if (exitButton) {
     exitButton.addEventListener('click', (e) => {
-      console.log('Exit button clicked - clearing session and navigating away');
+
       e.preventDefault();
       clearDashboardSession();
-      console.log('Navigating to:', e.target.href);
+
       window.location.href = e.target.href;
     });
   } else {
@@ -321,14 +315,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Optional: Clear on any page unload
-  console.log('5. Setting up beforeunload handler...');
+
   document.querySelector('.editor-button.exit-button')?.addEventListener('click', (e) => {
-    console.log('Exit button clicked - clearing session');
+
     clearDashboardSession();
     window.location.href = e.target.href;
   });
 
-  console.log('=== DASHBOARD INITIALIZATION COMPLETE ===');
+
 });
 
 document.addEventListener('DOMContentLoaded', () => {

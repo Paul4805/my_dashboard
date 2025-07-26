@@ -27,7 +27,7 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 def generate_sql_from_prompt(user_prompt, schema_description, database_type):
-    print(database_type)
+    
     """
     Converts natural language questions to raw SQL queries using LLM via RunPod.
 
@@ -221,7 +221,7 @@ def generate_forecast_config(user_prompt, forecast_result, period, chart_type="l
         ]
     }
     """
-    print(f"Generating forecast config for prompt: {user_prompt}")
+    
     x_axis_data = []
     combined_data = []
 

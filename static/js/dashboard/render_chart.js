@@ -99,7 +99,6 @@ export function renderChartToCanvas(chartData, chartType = 'bar', shouldSave = t
 
   if (shouldSave) {
     const fullConfig = getFullChartConfig(chart);
-    console.log(fullConfig)
     const saved = JSON.parse(sessionStorage.getItem('widgets') || '[]');
     saved.push({
       id: widgetId,

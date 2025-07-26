@@ -33,7 +33,7 @@ async def generate_dashboard(
 
     conn = cached["connection"]
     schema = cached["schema"]
-    print(schema)
+    
     db_type = db_id.split(" - ")[0].strip().lower()
 
     # 🔥 NEW STEP: Let LLM classify the user's intent
@@ -44,23 +44,22 @@ async def generate_dashboard(
     # For most intents, SQL is still needed
     if intent=="visualization":
         sql_query = generate_sql_from_prompt(prompt, schema, db_type)
-        print(f"📝 [DEBUG] Generated SQL: {sql_query}")
+        
         try:
             cursor.execute(sql_query)
             rows = cursor.fetchall()
             columns = [desc[0] for desc in cursor.description]
             transformed_data = transform_sql_result_to_llm_json(columns, rows)
-            print(f"✅ [DEBUG] Transformed Data: {transformed_data}")
+            
         except Exception as e:
             print(f"❌ [ERROR] SQL Execution Failed: {e}")
             save_query_history(db, current_user, prompt, sql_query, "failed", None)
             return JSONResponse(status_code=500, content={"error": "SQL execution failed"})
         token_limit = 100_000
         input_token_count = count_tokens(prompt) + count_tokens(str(transformed_data))
-        print(f"🔢 [DEBUG] Total tokens: {input_token_count}")
+        
 
         if input_token_count > token_limit:
-            print(f"⚠️ [WARNING] Token limit exceeded ({input_token_count} > {token_limit}). Truncating data.")
 
             # Truncate data safely
             if isinstance(transformed_data, list):
@@ -72,11 +71,9 @@ async def generate_dashboard(
                     print("⚠️ [WARNING] 'data' key not in expected list format, skipping truncation.")
             else:
                 print("❌ [ERROR] Unrecognized transformed_data structure. Skipping truncation.")
-        print(prompt)
-        print(data.get("chart_type"))
+
         chart_type = data.get("chart_type") or detect_chart_type(prompt)
-        print("after detection")
-        print(chart_type)
+
         echarts_config = generate_echarts_config(prompt, transformed_data, chart_type)
         result_payload = {
             "chart_type": chart_type,
@@ -85,7 +82,6 @@ async def generate_dashboard(
         
     elif intent == "forecasting":
         sql_query_forcast = generate_sql_from_prompt_for_prophet(prompt, schema, db_type)
-        print(f"📝 [DEBUG] Generated SQL for forecasting: {sql_query_forcast}")
         try:
             cursor.execute(sql_query_forcast)
             rows = cursor.fetchall()
@@ -98,7 +94,7 @@ async def generate_dashboard(
             # Assuming your SQL query already returns columns with these names
             prophet_data = [{"ds": row["ds"], "y": row["y"]} for row in data]
 
-            print(f"✅ [DEBUG] Data for Prophet: {prophet_data}")
+
 
         except Exception as e:
             print(f"❌ [ERROR] SQL Execution for forecasting Failed: {e}")
@@ -107,10 +103,10 @@ async def generate_dashboard(
         period=get_period(prompt)
         forecast_result = run_forecasting(prophet_data, prompt, period)
         output_format = detect_output_format(prompt)
-        print(f"✅ [DEBUG] Forecast Result: {forecast_result}")
+
         chart_type = "line"  # Forecasts are typically shown as line charts
         echarts_config = generate_forecast_config(prompt, forecast_result, period, chart_type)
-        print(echarts_config)
+
         result_payload = {
             "chart_type": chart_type,
             "echarts_config": echarts_config
@@ -126,7 +122,7 @@ async def generate_dashboard(
     # Save successful query
     save_query_history(db, current_user, prompt, sql_query, status, result_payload)
 
-    print(f"✅ [DEBUG] Result Payload: {result_payload}")
+    
     return {
         "status": status,
         "intent": intent,

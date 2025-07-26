@@ -15,7 +15,7 @@ class SessionConnectionManager:
                 "connection": connection,
                 "schema": schema
             }
-            print(f"[DEBUG] Set connection: session_id='{session_id}', db_id='{db_id}'")
+            
 
     def get_connection(self, session_id: str, db_id: str) -> Optional[Dict[str, Any]]:
         with self.lock:
@@ -31,11 +31,11 @@ class SessionConnectionManager:
                 except Exception as e:
                     print(f"[WARN] Could not close connection for session_id='{session_id}', db_id='{db_id}': {e}")
                 del self._cache[session_id][db_id]
-                print(f"[DEBUG] Removed connection: session_id='{session_id}', db_id='{db_id}'")
+                
 
             if not self._cache[session_id]:
                 del self._cache[session_id]
-                print(f"[DEBUG] All connections cleared for session_id='{session_id}'")
+                
 
     def clear_session(self, session_id: str):
         with self.lock:
@@ -46,7 +46,7 @@ class SessionConnectionManager:
                     except Exception as e:
                         print(f"[WARN] Failed to close connection for session_id='{session_id}', db_id='{db_id}': {e}")
                 del self._cache[session_id]
-                print(f"[DEBUG] Cleared all connections for session_id='{session_id}'")
+                
 
 # Singleton instance
 session_conn_manager = SessionConnectionManager()
