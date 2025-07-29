@@ -10,10 +10,29 @@ from decimal import Decimal
 from datetime import date, datetime
 import json
 
+from langchain_openai import ChatOpenAI
+
+
+
+import os
+import redis
+from langchain.schema import HumanMessage, AIMessage, SystemMessage
+from langchain_community.chat_message_histories import RedisChatMessageHistory
+
+
+# Init Redis client for raw connection (if needed)
+redis_client = redis.Redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379"))
 
 load_dotenv()  # Load from .env
 api_key = os.getenv("DEEPSEEK_API_KEY")
 
+
+
+llm = ChatOpenAI(
+    model="gpt-4",  # or "gpt-4", "gpt-3.5-turbo"
+    temperature=0.7,
+    openai_api_key=os.getenv("DEEPSEEK_API_KEY")
+)
 
 client = OpenAI(api_key=api_key)
 
@@ -64,18 +83,10 @@ given the schema and user question.
 """
 
     # Call the model (DeepSeek/Llama etc.)
-    sqlquery = client.chat.completions.create(
-        model="gpt-4.1",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    )
-
+    sqlquery = llm([HumanMessage(content=prompt)])
+    content = sqlquery.content.strip()
     # Extract only SQL from response
-    sqlquery = clean_sql(sqlquery.choices[0].message.content.strip())
+    sqlquery = clean_sql(content)
     return sqlquery
 
 
@@ -192,15 +203,8 @@ Instructions:
 Return ONLY valid JSON below:
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4.1",
-        messages=[{
-            "role": "user",
-            "content": prompt
-        }]
-    )
-
-    content = response.choices[0].message.content.strip()
+    response = llm([HumanMessage(content=prompt)])
+    content = response.content.strip()
     cleaned = re.sub(r"^```json\s*|\s*```$", "", content.strip(), flags=re.IGNORECASE)
 
     try:
@@ -291,12 +295,9 @@ User's Request: {user_prompt}
 Respond with ONLY the intent name, no explanations.
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4.1",
-        messages=[{"role": "user", "content": prompt}]
-    )
+    response = llm([HumanMessage(content=prompt)])
 
-    intent = response.choices[0].message.content.strip().lower()
+    intent = response.content.strip()
 
     # Fallback validation
     allowed_intents = ["visualization", "anomaly_detection", "prediction", "forecasting", "clustering"]
@@ -363,28 +364,39 @@ def generate_sql_from_prompt_for_prophet(prompt, schema, db_type):
     
     return base_sql
 
-def askai(user_message: str) -> str:
+def askai(user_message: str, user_id: int) -> str:
     try:
-        response = client.chat.completions.create(
-            model="gpt-4.1",  # or "gpt-3.5-turbo" if needed
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are an AI assistant for data dashboard users. Answer queries clearly and helpfully."
-                },
-                {
-                    "role": "user",
-                    "content": user_message
-                }
-            ],
-            temperature=0.7
+        # Unique session key per user
+        session_key = f"user-chat:{user_id}"
+
+        # Connect LangChain to Redis for this user
+        chat_history = RedisChatMessageHistory(
+            session_id=session_key,
+            url=os.getenv("REDIS_URL", "redis://localhost:6379")
         )
 
-        return response.choices[0].message.content.strip()
+        # If it's a new session, add system prompt
+        if len(chat_history.messages) == 0:
+            chat_history.add_message(SystemMessage(
+                content="You are a helpful AI assistant for data dashboard users."
+            ))
+
+        # Add user message
+        chat_history.add_message(HumanMessage(content=user_message))
+
+        # Call LLM with entire chat history
+        response = llm.invoke(chat_history.messages)
+
+
+        # Save assistant reply
+        chat_history.add_message(AIMessage(content=response.content))
+
+        return response.content.strip()
 
     except Exception as e:
         print("[AI ERROR]", e)
         return "Sorry, I'm currently unable to respond."
+
     
 
 def get_period(user_prompt):
@@ -406,12 +418,8 @@ User's Request: {user_prompt}
 Respond with ONLY the period in days, no explanations and only number.
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4.1",
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    period_str = response.choices[0].message.content.strip()
+    response = llm([HumanMessage(content=prompt)])
+    period_str = response.content.strip()
     
     try:
         period = int(period_str)

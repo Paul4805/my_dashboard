@@ -7,10 +7,13 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis  # make sure redis starts before web
     env_file:
       - .env
     volumes:
       - .:/app
+    environment:
+      REDIS_URL: redis://redis:6379  # 👈 point to service name, not localhost
 
   db:
     image: postgres:15
@@ -21,6 +24,10 @@ services:
       POSTGRES_DB: yourdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  redis:  # ✅ new service
+    image: redis:7
+    restart: always
 
 volumes:
   postgres_data:
