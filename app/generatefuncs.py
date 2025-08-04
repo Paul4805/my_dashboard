@@ -179,7 +179,7 @@ def generate_echarts_config(user_prompt, results, chart_type):
     template = templates.get(chart_type, bar_chart_template)
 
     prompt = f"""
-You are a chart generation assistant building JSON configs for Chart.js.
+You are a chart generation assistant building JSON configs compatible with this custom ECharts-like schema:
 
 Question: {user_prompt}
 Chart type: {chart_type}
